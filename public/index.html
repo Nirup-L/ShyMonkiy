@@ -80,25 +80,30 @@
       <div class="container-fluid">
         <button class="btn btn-outline-light" onclick="goToGallery()"> gallery </button>
         <span class="online-status" id="onlineStatus"></span>
-        <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+        <a href="https://meet.google.com/khm-ospm-vyr">
+          <button class="btn btn-outline-light"><i class="bi bi-telephone-fill"></i></button>
+        </a>
       </div>
     </nav>
-
+    <button id="logout-btn" class="btn btn-outline-light" onclick="logout()">Logout</button>
     <div class="chat-body-wrapper d-flex flex-column">
       <div id="chatWindowContainer">
         <div id="chatWindow" class="py-3 chat-window overflow-auto"></div>
-        <p id="typingIndicator" class="px-3 small text-muted" style="color:white"></p>
+        <div id="filePreview" class="px-3 text-muted small" style="display:none;">
+        </div>
+        <p id="typingIndicator" class="px-3 small text-muted overflow-hidden" style="color:white"></p>
       </div>
       <button id="scrollToBottomBtn">
         👇
       </button>
+      
+
 <div id="replyPreview" style="display: none; background: #fff3cd; padding: 8px; padding-bottom:2px; border-left: 4px solid orange; border-radius: 6px; margin: 0 8px 4px 8px;">
   <div id="replyText" style="font-size: 0.8rem;"></div>
   <button onclick="cancelReply()" style="float: right; background: none; border: none; font-size: 1rem;">✖</button>
 </div> 
       <div id="inputAreaContainer" class="input-area d-flex align-items-center gap-2 px-3 py-2">
-        <div id="filePreview" class="px-3 text-muted small" style="display:none;"></div>
-
+        
         <button onclick="document.getElementById('fileInput').click()"><i class="bi bi-paperclip"></i></button>
         
         <textarea id="messageInput" class="form-control" placeholder="type here.." rows="1" oninput="adjustTextarea(this); sendTyping()"></textarea>

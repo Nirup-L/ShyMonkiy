@@ -58,9 +58,12 @@ window.addEventListener("beforeunload", () => {
   localStorage.removeItem("draftMessage");
   setPresence(currentUser, false);
 });
+//login
 function login() {
   const user = document.getElementById("username").value;
   const pass = document.getElementById("password").value;
+  //const user = "Nirup"
+  //const pass = "nila2234"
   if (USERS[user] === pass) {
     currentUser = user;
     localStorage.setItem("currentUser", currentUser);

@@ -142,13 +142,21 @@ textarea#messageInput {
 }
 
 #filePreview {
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: #d3ffe4;
   padding: 8px;
   margin-bottom: 4px;
   font-size: 0.85rem;
   max-height: 120px;
   overflow-y: auto;
+}
+
+#logout-btn
+{
+  position: absolute;
+  background-color: blueviolet;
+  margin-top: 10vh;
+  margin-left: 2vh;
+  z-index: 10000;
 }
 
 #scrollToBottomBtn
@@ -162,7 +170,7 @@ bottom : 5rem;
 z-index: 10000;
 width: fit-content;
 font-size: 20px;
-border:none;
+border: 5px solid rgb(193, 193, 193);
 outline: none;
 display:none;
 }
@@ -296,7 +304,7 @@ display:none;
 
 #typingIndicator {
   font-style: italic;
-  padding: 5px 5px;
+  padding: 8px 0px;
   background-color: white;
   font-weight: bolder;
   margin-bottom: -1.7vh;
