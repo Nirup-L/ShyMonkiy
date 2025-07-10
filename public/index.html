@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ShyMonkiy🙈</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    #typingIndicator {
+      font-style: italic;
+      padding: 5px 15px;
+      color: white;
+      font-weight: bolder;
+    }
+    .seen-status {
+      font-size: 0.75em;
+      color: gray;
+      text-align: right;
+      margin-top:1px;
+    }
+    textarea#messageInput {
+      resize: none;
+      overflow-y: auto;
+      max-height: 8em;
+      min-height: 2.5em;
+    }
+    .emoji-picker {
+      position: absolute;
+      bottom: 50px;
+      left: 15px;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 5px;
+      border-radius: 8px;
+      display: none;
+    }
+    .emoji-picker span {
+      cursor: pointer;
+      font-size: 1.5rem;
+      padding: 3px;
+    }
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 12px;
+    }
+    .online-status {
+      font-size: 0.85rem;
+      color: lightgreen;
+    }
+  </style>
+</head>
+<body>
+  <div id="loginPage" class="container h-100">
+    <div class="container h-100 d-flex align-items-center justify-content-center">
+    <div id="login-container">
+    <h3 class="text-center mb-5 fw-bolder">ShyMonkiy🙈</h3>
+    <div class="mb-4">
+      <input type="text" id="username" class="form-control" placeholder="Your Name" />
+    </div>
+    <div class="mb-4">
+      <input type="password" id="password" class="form-control" placeholder="password" />
+    </div>
+    <button id="login-btn" class="btn fw-bolder h-25" onclick="login()" style="color:white">Login</button>
+    <p id="loginError" class="text-danger mt-2 text-center"></p>
+    </div>
+    </div>
+  </div>
+
+  <div id="chatApp" style="display:none">
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <button class="btn btn-outline-light" onclick="goToGallery()"> gallery </button>
+        <span class="online-status" id="onlineStatus"></span>
+        <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+
+    <div class="chat-body-wrapper d-flex flex-column">
+      <div id="chatWindowContainer">
+        <div id="chatWindow" class="py-3 chat-window overflow-auto"></div>
+        <p id="typingIndicator" class="px-3 small text-muted" style="color:white"></p>
+      </div>
+      <button id="scrollToBottomBtn">
+        👇
+      </button>
+<div id="replyPreview" style="display: none; background: #fff3cd; padding: 8px; padding-bottom:2px; border-left: 4px solid orange; border-radius: 6px; margin: 0 8px 4px 8px;">
+  <div id="replyText" style="font-size: 0.8rem;"></div>
+  <button onclick="cancelReply()" style="float: right; background: none; border: none; font-size: 1rem;">✖</button>
+</div> 
+      <div id="inputAreaContainer" class="input-area d-flex align-items-center gap-2 px-3 py-2">
+        <div id="filePreview" class="px-3 text-muted small" style="display:none;"></div>
+
+        <button onclick="document.getElementById('fileInput').click()"><i class="bi bi-paperclip"></i></button>
+        
+        <textarea id="messageInput" class="form-control" placeholder="type here.." rows="1" oninput="adjustTextarea(this); sendTyping()"></textarea>
+
+        <button id="recordBtn" onclick="toggleRecording()"><i class="bi bi-mic-fill"></i></button>
+        <span id="recordingIndicator" class="text-danger ms-2" style="display:none;">Recording...</span>
+        <button class="btn btn-primary" onclick="sendMessage()"><i class="bi bi-send"></i></button>
+
+        <input type="file" id="fileInput" multiple style="display:none" onchange="handleFileSelection()" />
+      </div>
+    </div>
+  </div>
+
+
+  <div id="gallery" style="display:none">
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <button class="btn btn-outline-light" onclick="goToChat()"> chat </button>
+        <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+    <input type="file" id="galleryFileInput" multiple accept="image/*,video/*" style="display:none">
+<button id="galleryUploadBtn" class="upload-fab">+</button>
+
+<!-- Progress bar below navbar -->
+<div id="galleryUploadProgress" class="progress" style="height: 5px; display: none;">
+  <div class="progress-bar" style="width: 0%"></div>
+</div>
+
+<!-- Preview -->
+<div id="galleryUpload" style="padding: 10px; display: none;">
+  <div id="galleryUploadPreview" style="padding: 10px; display: none;"></div>
+</div>
+
+    <div id="images">
+
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let recorder, audioChunks = [], recordTimeout;
+    let isRecording = false;
+    const messageInput = document.getElementById("messageInput");
+
+    function toggleRecording() {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    }
+
+    function startRecording() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Your browser doesn't support audio recording.");
+        messageInput.style.display = "block";
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          if (typeof MediaRecorder === "undefined") {
+            alert("MediaRecorder is not supported in this browser.");
+            messageInput.style.display = "block";
+            return;
+          }
+
+          recorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          recorder.ondataavailable = e => audioChunks.push(e.data);
+          recorder.onstop = () => {
+            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+            const file = new File([blob], "recorded.webm", { type: 'audio/webm' });
+
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById("fileInput").files = dt.files;
+
+            sendMessage();
+            audioChunks = [];
+          };
+
+          recorder.start();
+          isRecording = true;
+          document.getElementById("recordingIndicator").style.display = "inline";
+          messageInput.style.display = "none";
+          recordTimeout = setTimeout(stopRecording, 15 * 60 * 1000); // 15 minutes
+        })
+        .catch(err => {
+          alert("Microphone permission denied or unavailable: " + err.message);
+          messageInput.style.display = "block";
+        });
+    }
+
+    function stopRecording() {
+      messageInput.style.display = "block";
+      if (recorder && isRecording) {
+        recorder.stop();
+        isRecording = false;
+        document.getElementById("recordingIndicator").style.display = "none";
+        clearTimeout(recordTimeout);
+        scrollToBottom();
+      }
+    }
+
+    function viewImage(url) {
+      const lb = document.createElement("div");
+      lb.className = "lightbox";
+      lb.onclick = () => lb.remove();
+      lb.innerHTML = `<img src="${url}">`;
+      document.body.appendChild(lb);
+    }
+
+    const input = document.getElementById("messageInput");
+    input.addEventListener("focus", () => {
+      setTimeout(() => {
+        input.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+      }, 300);
+    });
+
+    window.addEventListener("resize", () => {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    });
+  </script>
+</body>
+</html>
