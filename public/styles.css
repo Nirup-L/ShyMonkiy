@@ -93,6 +93,12 @@ body, html {
   background: transparent !important;
 }
 
+.message a {
+  color: #FAFF01;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
 .input-area {
   background-color: #f0f0f0;
   padding: 10px;
