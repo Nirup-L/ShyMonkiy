@@ -1,1 +1,14 @@
-this is my code , i have to achieve pagination , it is taking too much time to load , the last 21 messages should be loaded from the database , it must render the last 20 messages, for example let us take if the id of last message is 0 and the previous message is 1 and so on , look for change in date and add date seperators in that 20 messages , but there is a possibility that the 20th (message id=19) message and 21st message will come under same date , so check if the 21st message and 20th message are from same date , if yes , do not add date seperator at the top of 20 messages , else add it , also have the functionality to add the upcoming message at the bottom 
+
+this is my code , i have to achieve pagination , it is taking too much time to load , the last 21 messages should be loaded from the database , it must render the last 20 messages, for example let us take if the id of last message is 0 and the previous message is 1 and so on , look for change in date and add date seperators in that 20 messages , but there is a possibility that the 20th (message id=19) message and 21st message will come under same date , so check if the 21st message and 20th message are from same date , if yes , do not add date seperator at the top of 20 messages , else add it , also have the functionality to add the upcoming message at the bottom , also if i scroll up , next set of 20 messages should be loaded , do not make the messages repeated , or unordered , i already added
+
+{
+"rules": {
+".read": true,
+".write": true,
+"messages":{
+".indexOn":"timestamp"
+}
+}
+}
+This rule in my realtime database , help me to achieve it , provide me with fully altered code
+
