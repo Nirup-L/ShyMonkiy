@@ -154,7 +154,7 @@ textarea#messageInput {
 {
   position: absolute;
   background-color: blueviolet;
-  margin-top: 10vh;
+  margin-top: 8vh;
   margin-left: 2vh;
   z-index: 10000;
 }
