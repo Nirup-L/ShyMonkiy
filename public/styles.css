@@ -153,7 +153,7 @@ textarea#messageInput {
 #logout-btn
 {
   position: absolute;
-  background-color: blueviolet;
+  background-color: rgb(255, 29, 29);
   margin-top: 8vh;
   margin-left: 2vh;
   z-index: 10000;
