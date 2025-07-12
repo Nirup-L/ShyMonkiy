@@ -13,27 +13,13 @@
       font-size: 0.75em;
       color: rgb(171, 171, 171);
       text-align: right;
+      font-family: 'Poppins', sans-serif;
     }
     textarea#messageInput {
       resize: none;
       overflow-y: auto;
       max-height: 8em;
       min-height: 2.5em;
-    }
-    .emoji-picker {
-      position: absolute;
-      bottom: 50px;
-      left: 15px;
-      background: white;
-      border: 1px solid #ccc;
-      padding: 5px;
-      border-radius: 8px;
-      display: none;
-    }
-    .emoji-picker span {
-      cursor: pointer;
-      font-size: 1.5rem;
-      padding: 3px;
     }
     .lightbox {
       position: fixed;
@@ -78,7 +64,7 @@
   <div id="chatApp" style="display:none">
     <nav class="navbar navbar-dark bg-dark">
       <div class="container-fluid">
-        <button class="btn btn-outline-light" onclick="goToGallery()"> gallery </button>
+        <button class="btn btn-outline-light" onclick="goToGallery()" style="font-family: 'Poppins', sans-serif;"> gallery </button>
         <span class="online-status" id="onlineStatus"></span>
         <a href="https://meet.google.com/khm-ospm-vyr">
           <button class="btn btn-outline-light"><i class="bi bi-telephone-fill"></i></button>
@@ -119,10 +105,10 @@
 
 
   <div id="gallery" style="display:none">
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark" style="font-family: 'Poppins', sans-serif;">
       <div class="container-fluid">
         <button class="btn btn-outline-light" onclick="goToChat()"> chat </button>
-        <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+        <button class="btn btn-outline-light" onclick="logout()" style="background-color: rgb(255, 29, 29);font-family: 'Poppins', sans-serif;">Logout</button>
       </div>
     </nav>
     <input type="file" id="galleryFileInput" multiple accept="image/*,video/*" style="display:none">

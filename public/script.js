@@ -292,10 +292,16 @@ function isOnlyEmoji(text) {
   return emojiRegex.test(text.trim());
 }
 
+function escapeHTML(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 function linkify(text) {
   const urlRegex = /(\bhttps?:\/\/[^\s<]+)/gi;
-  return text.replace(urlRegex, (url) => {
-    const cleanUrl = url.replace(/[\u200B-\u200D\uFEFF]/g, ''); // remove invisible chars
+  return escapeHTML(text).replace(urlRegex, (url) => {
+    const cleanUrl = url.replace(/[\u200B-\u200D\uFEFF]/g, '');
     return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${cleanUrl}</a>`;
   });
 }
@@ -360,14 +366,17 @@ function createMessageElement(msg, id) {
 }
 
 
-  if (msg.text) {
-    const textP = document.createElement("p");
-    textP.innerHTML = linkify(msg.text);
-    if (isOnlyEmoji(msg.text)) {
-      div.classList.add("emoji-only");
-    }
-    div.appendChild(textP);
+if (msg.text) {
+  const textP = document.createElement("p");
+  textP.style.whiteSpace = "pre-wrap"; // preserves spaces and line breaks
+  textP.innerHTML = linkify(msg.text);
+
+  if (isOnlyEmoji(msg.text)) {
+    div.classList.add("emoji-only");
   }
+
+  div.appendChild(textP);
+}
 
   if (msg.fileURL && msg.type?.startsWith("image/")) {
     const img = new Image();
