@@ -3,24 +3,27 @@ const USERS = {
   "Sharmila": "nila2234"
 };
 
+
 let currentUser = localStorage.getItem("currentUser") || "";
 let inactivityTimer;
 let lastMessageDate = "";
 let typingTimeout;
+const chatWindow = document.getElementById("chatWindow");
 
 window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
     document.getElementById("loginPage").style.display = "none";
-    document.getElementById("gallery").style.display = "block";
-    document.getElementById("chatApp").style.display = "none";
+    document.getElementById("gallery").style.display = "none";
+    document.getElementById("chatApp").style.display = "block";
     document.getElementById("messageInput").value = localStorage.getItem("draftMessage") || "";
     adjustTextarea(document.getElementById("messageInput"));
+    const topLoader = document.getElementById("topLoader");
+    topLoader.style.display = "block";
     listenForMessages(() => setTimeout(scrollToBottom, 300));
     listenToTyping();
     listenToPresence();
     setPresence(currentUser, true);
     startInactivityTimer();
-    loadGallery();
     imguploadbtn();
   }
 });
@@ -35,6 +38,8 @@ function goToGallery() {
 function goToChat() {
   document.getElementById("gallery").style.display = "none";
   document.getElementById("chatApp").style.display = "flex";
+  const topLoader = document.getElementById("topLoader");
+  topLoader.style.display = "block";
   listenForMessages(); // Re-attach listener
   setTimeout(() => document.getElementById("messageInput").focus(), 100); // <- add this// Ensure listener re-attaches properly
 }
@@ -68,16 +73,18 @@ function login() {
     currentUser = user;
     localStorage.setItem("currentUser", currentUser);
     document.getElementById("loginPage").style.display = "none";
-    document.getElementById("gallery").style.display = "block"; // Show gallery
-    document.getElementById("chatApp").style.display = "none"; // Hide chat
+    document.getElementById("gallery").style.display = "none"; // Show gallery
+    document.getElementById("chatApp").style.display = "flex"; // Hide chat
     document.getElementById("messageInput").value = "";
     localStorage.removeItem("draftMessage");
+    const topLoader = document.getElementById("topLoader");
+    topLoader.style.display = "block";
     listenForMessages(() => setTimeout(scrollToBottom, 300));
     listenToTyping();
     listenToPresence();
+    setTimeout(() => document.getElementById("messageInput").focus(), 100);
     setPresence(currentUser, true);
     startInactivityTimer();
-    loadGallery();
     imguploadbtn();
    
   } else {
@@ -87,11 +94,20 @@ function login() {
 
 
 function logout() {
+  const user = localStorage.getItem("currentUser"); // Save before clearing
   localStorage.removeItem("currentUser");
   localStorage.removeItem("draftMessage");
-  setPresence(currentUser, false);
+  setPresence(user, false); // Now this has a valid value
   location.reload();
 }
+
+window.addEventListener("beforeunload", () => {
+  const user = localStorage.getItem("currentUser");
+  if (user) {
+    setPresence(user, false);
+  }
+});
+
 
 function setPresence(user, isOnline) {
   const ref = db.ref(`presence/${user}`);
@@ -174,7 +190,11 @@ function sendMessage() {
         });
       });
     });
-  } else if (msgText.trim()) {
+  } 
+  else if(msgText.trim()===USERS[currentUser]){
+     goToGallery();
+    }
+    else if (msgText.trim()) {
     const msgId = db.ref().child('messages').push().key;
     db.ref('messages/' + msgId).set({
       sender: currentUser,
@@ -230,22 +250,52 @@ function adjustTextarea(el) {
   el.style.height = Math.min(el.scrollHeight, 130) + 'px';
 }
 
-function listenForMessages(callback = () => {}) {
-  const chatWindow = document.getElementById("chatWindow");
-  chatWindow.innerHTML = "";
-  const messageMap = {};
-  let lastDate = "";
+let earliestTimestamp = Infinity;
+const messageMap = {};
+const batch_size = 25;
+let lastKnownDate = "";
+let isLoadingPrevious = false;
+let isFirstLoad = true;
+const topLoader = document.getElementById("topLoader");
+topLoader.style.display = "block";
+chatWindow.addEventListener("scroll", () => {
+  if (chatWindow.scrollTop < 950 && !isLoadingPrevious) {
+    isLoadingPrevious = true;
+    topLoader.style.display = "block";
 
-  const ref = db.ref("messages").orderByChild("timestamp");
+    const prevScrollHeight = chatWindow.scrollHeight;
+
+    loadPreviousMessages(earliestTimestamp, () => {
+      const newScrollHeight = chatWindow.scrollHeight;
+      chatWindow.scrollTop = newScrollHeight - prevScrollHeight;
+      isLoadingPrevious = false;
+      topLoader.style.display = "none";
+    });
+  }
+});
+
+function loadInitialMessages(callback = () => {}) {
+  chatWindow.innerHTML = "";
+  const topLoader = document.getElementById("topLoader");
+  topLoader.style.display = "block";
+  const ref = db.ref("messages").orderByChild("timestamp").limitToLast(batch_size);
   ref.off();
+
+  let count = 0;
+  let lastDate = "";
 
   ref.on("child_added", snapshot => {
     const id = snapshot.key;
     const msg = snapshot.val();
     const dateStr = formatChatDate(msg.timestamp);
 
-    // Add date separator if date changes
-    if (dateStr !== lastDate) {
+    if (msg.timestamp < earliestTimestamp) {
+      earliestTimestamp = msg.timestamp;
+      lastKnownDate = dateStr;
+      lastDate = lastKnownDate;
+    }
+
+    if (dateStr !== lastDate && count > 0) {
       lastDate = dateStr;
       const separator = document.createElement("div");
       separator.className = "date-separator text-center my-2 text-muted";
@@ -261,7 +311,12 @@ function listenForMessages(callback = () => {}) {
       markAsSeen(id);
     }
 
-    scrollToBottom();
+    count++;
+
+    if (isFirstLoad) {
+      scrollToBottom();
+    }
+
     callback();
   });
 
@@ -274,8 +329,62 @@ function listenForMessages(callback = () => {}) {
       const newDiv = createMessageElement(msg, id);
       chatWindow.replaceChild(newDiv, oldDiv);
       messageMap[id] = newDiv;
-      scrollToBottom();
     }
+  });
+
+  isFirstLoad = false;
+  topLoader.style.display = "none";
+}
+
+function listenForMessages(callback = () => {}) {
+  loadInitialMessages(callback);
+}
+
+function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
+  const ref = db
+    .ref("messages")
+    .orderByChild("timestamp")
+    .endAt(earliestTimeStamp - 1)
+    .limitToLast(batch_size);
+
+  ref.once("value", snapshot => {
+    const messages = [];
+    let newEarliest = earliestTimestamp;
+
+    snapshot.forEach(child => {
+      const id = child.key;
+      const msg = child.val();
+      messages.push({ id, ...msg });
+
+      if (msg.timestamp < newEarliest) {
+        newEarliest = msg.timestamp;
+      }
+    });
+
+    earliestTimestamp = newEarliest;
+
+    let lastDate = lastKnownDate;
+    let count = 0;
+
+    messages.reverse().forEach(({ id, ...msg }) => {
+      const dateStr = formatChatDate(msg.timestamp);
+      count++;
+
+      if (dateStr !== lastDate && count > 1) {
+        const separator = document.createElement("div");
+        separator.className = "date-separator text-center my-2 text-muted";
+        separator.innerText = dateStr;
+        chatWindow.insertBefore(separator, chatWindow.firstChild);
+        lastDate = dateStr;
+      }
+
+      const div = createMessageElement(msg, id);
+      chatWindow.insertBefore(div, chatWindow.firstChild);
+      messageMap[id] = div;
+    });
+
+    lastKnownDate = lastDate;
+    callback();
   });
 }
 
@@ -536,7 +645,6 @@ function formatLastSeen(ts) {
 }
 
 
-const chatWindow = document.getElementById("chatWindow");
 const scrollBtn = document.getElementById("scrollToBottomBtn");
 
 function scrollToBottom() {

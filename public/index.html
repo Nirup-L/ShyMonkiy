@@ -64,16 +64,16 @@
   <div id="chatApp" style="display:none">
     <nav class="navbar navbar-dark bg-dark">
       <div class="container-fluid">
-        <button class="btn btn-outline-light" onclick="goToGallery()" style="font-family: 'Poppins', sans-serif;"> gallery </button>
+        <button id="logout-btn" class="btn btn-outline-light" onclick="logout()">Logout</button>
         <span class="online-status" id="onlineStatus"></span>
         <a href="https://meet.google.com/khm-ospm-vyr">
           <button class="btn btn-outline-light"><i class="bi bi-telephone-fill"></i></button>
         </a>
       </div>
     </nav>
-    <button id="logout-btn" class="btn btn-outline-light" onclick="logout()">Logout</button>
     <div class="chat-body-wrapper d-flex flex-column">
       <div id="chatWindowContainer">
+        <div id="topLoader" style="text-align:center;">Loading...</div>
         <div id="chatWindow" class="py-3 chat-window overflow-auto"></div>
         <div id="filePreview" class="px-3 text-muted small" style="display:none;">
         </div>

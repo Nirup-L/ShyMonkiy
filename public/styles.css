@@ -151,14 +151,26 @@ textarea#messageInput {
   overflow-y: auto;
 }
 
+#topLoader
+{
+  width: fit-content;
+  padding: 7px 20px;
+  background-color: rgb(0, 123, 255);
+  color: #ffffff;
+  font-weight: bold;
+  font-size: small;
+  border-radius: 30px;
+  align-self: center;
+  font-family: "Poppins" , 'sans-serif';
+  position: absolute;
+  z-index: 999;
+  display: block;
+}
+
 
 #logout-btn
 {
-  position: absolute;
   background-color: rgb(255, 29, 29);
-  margin-top: 8vh;
-  margin-left: 2vh;
-  z-index: 10000;
   font-family: 'Poppins', sans-serif;
 }
 
