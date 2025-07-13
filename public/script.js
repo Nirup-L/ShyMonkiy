@@ -40,8 +40,7 @@ function goToChat() {
   document.getElementById("chatApp").style.display = "flex";
   const topLoader = document.getElementById("topLoader");
   topLoader.style.display = "block";
-  listenForMessages(); // Re-attach listener
-  setTimeout(() => document.getElementById("messageInput").focus(), 100); // <- add this// Ensure listener re-attaches properly
+  listenForMessages(); // Re-attach listener // <- add this// Ensure listener re-attaches properly
 }
 
 
