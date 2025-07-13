@@ -86,7 +86,7 @@ function login() {
     imguploadbtn();
    
   } else {
-    document.getElementById("loginError").innerText = "thappu thappu😏😏";
+    document.getElementById("loginError").innerText = "Invalid user Credentials";
   }
 }
 
@@ -211,7 +211,9 @@ function sendMessage() {
   adjustTextarea(document.getElementById("messageInput"));
   document.getElementById("filePreview").style.display = "none";
   document.getElementById("filePreview").innerHTML = "";
-   document.getElementById("messageInput").focus();
+  setTimeout(() => {
+    document.getElementById("messageInput").focus();
+  }, 100);
 }
 
 
