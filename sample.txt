@@ -1,14 +1,141 @@
+let earliestTimestamp = Infinity;
+const messageMap = {};
+const batch_size = 30;
+let lastKnownDate = "";
+let isLoadingPrevious = false;
+let isFirstLoad = true;
 
-this is my code , i have to achieve pagination , it is taking too much time to load , the last 21 messages should be loaded from the database , it must render the last 20 messages, for example let us take if the id of last message is 0 and the previous message is 1 and so on , look for change in date and add date seperators in that 20 messages , but there is a possibility that the 20th (message id=19) message and 21st message will come under same date , so check if the 21st message and 20th message are from same date , if yes , do not add date seperator at the top of 20 messages , else add it , also have the functionality to add the upcoming message at the bottom , also if i scroll up , next set of 20 messages should be loaded , do not make the messages repeated , or unordered , i already added
+const chatWindow = document.getElementById("chatWindow");
+const topLoader = document.getElementById("topLoader");
 
-{
-"rules": {
-".read": true,
-".write": true,
-"messages":{
-".indexOn":"timestamp"
-}
-}
-}
-This rule in my realtime database , help me to achieve it , provide me with fully altered code
+chatWindow.addEventListener("scroll", () => {
+  if (chatWindow.scrollTop < 100 && !isLoadingPrevious) {
+    isLoadingPrevious = true;
+    topLoader.style.display = "block";
 
+    const prevScrollHeight = chatWindow.scrollHeight;
+
+    loadPreviousMessages(earliestTimestamp, () => {
+      const newScrollHeight = chatWindow.scrollHeight;
+      chatWindow.scrollTop = newScrollHeight - prevScrollHeight;
+      isLoadingPrevious = false;
+      topLoader.style.display = "none";
+    });
+  }
+});
+
+function loadInitialMessages(callback = () => {}) {
+  chatWindow.innerHTML = "";
+
+  const ref = db.ref("messages").orderByChild("timestamp").limitToLast(batch_size);
+  ref.off();
+
+  let count = 0;
+  let lastDate = "";
+
+  ref.on("child_added", snapshot => {
+    const id = snapshot.key;
+    const msg = snapshot.val();
+    const dateStr = formatChatDate(msg.timestamp);
+
+    if (msg.timestamp < earliestTimestamp) {
+      earliestTimestamp = msg.timestamp;
+      lastKnownDate = dateStr;
+      lastDate = lastKnownDate;
+    }
+
+    if (dateStr !== lastDate && count > 0) {
+      lastDate = dateStr;
+      const separator = document.createElement("div");
+      separator.className = "date-separator text-center my-2 text-muted";
+      separator.innerText = dateStr;
+      chatWindow.appendChild(separator);
+    }
+
+    const div = createMessageElement(msg, id);
+    messageMap[id] = div;
+    chatWindow.appendChild(div);
+
+    if (msg.sender !== currentUser) {
+      markAsSeen(id);
+    }
+
+    count++;
+
+    if (isFirstLoad) {
+      scrollToBottom();
+    }
+
+    callback();
+  });
+
+  ref.on("child_changed", snapshot => {
+    const id = snapshot.key;
+    const msg = snapshot.val();
+
+    const oldDiv = messageMap[id];
+    if (oldDiv) {
+      const newDiv = createMessageElement(msg, id);
+      chatWindow.replaceChild(newDiv, oldDiv);
+      messageMap[id] = newDiv;
+    }
+  });
+
+  isFirstLoad = false;
+}
+
+function listenForMessages(callback = () => {}) {
+  loadInitialMessages(callback);
+}
+
+function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
+  const ref = db
+    .ref("messages")
+    .orderByChild("timestamp")
+    .endAt(earliestTimeStamp - 1)
+    .limitToLast(batch_size);
+
+  ref.once("value", snapshot => {
+    const messages = [];
+    let newEarliest = earliestTimestamp;
+
+    snapshot.forEach(child => {
+      const id = child.key;
+      const msg = child.val();
+      messages.push({ id, ...msg });
+
+      if (msg.timestamp < newEarliest) {
+        newEarliest = msg.timestamp;
+      }
+    });
+
+    earliestTimestamp = newEarliest;
+
+    let lastDate = lastKnownDate;
+    let count = 0;
+
+    messages.reverse().forEach(({ id, ...msg }) => {
+      const dateStr = formatChatDate(msg.timestamp);
+      count++;
+
+      if (dateStr !== lastDate && count > 1) {
+        const separator = document.createElement("div");
+        separator.className = "date-separator text-center my-2 text-muted";
+        separator.innerText = dateStr;
+        chatWindow.insertBefore(separator, chatWindow.firstChild);
+        lastDate = dateStr;
+      }
+
+      const div = createMessageElement(msg, id);
+      chatWindow.insertBefore(div, chatWindow.firstChild);
+      messageMap[id] = div;
+    });
+
+    lastKnownDate = lastDate;
+    callback();
+  });
+}
+
+function scrollToBottom() {
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
