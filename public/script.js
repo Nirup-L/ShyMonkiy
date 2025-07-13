@@ -81,7 +81,6 @@ function login() {
     listenForMessages(() => setTimeout(scrollToBottom, 300));
     listenToTyping();
     listenToPresence();
-    setTimeout(() => document.getElementById("messageInput").focus(), 100);
     setPresence(currentUser, true);
     startInactivityTimer();
     imguploadbtn();
