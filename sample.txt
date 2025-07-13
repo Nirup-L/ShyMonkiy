@@ -1,17 +1,30 @@
 let earliestTimestamp = Infinity;
 const messageMap = {};
-const batch_size = 12;
+const batch_size = 30;
 let lastKnownDate = "";
+let isLoadingPrevious = false;
+let isFirstLoad = true;
+
+const chatWindow = document.getElementById("chatWindow");
+const topLoader = document.getElementById("topLoader");
+
 chatWindow.addEventListener("scroll", () => {
-  if (chatWindow.scrollTop === 0) {
-    console.log(earliestTimestamp);
-    loadPreviousMessages(earliestTimestamp);
+  if (chatWindow.scrollTop < 100 && !isLoadingPrevious) {
+    isLoadingPrevious = true;
+    topLoader.style.display = "block";
+
+    const prevScrollHeight = chatWindow.scrollHeight;
+
+    loadPreviousMessages(earliestTimestamp, () => {
+      const newScrollHeight = chatWindow.scrollHeight;
+      chatWindow.scrollTop = newScrollHeight - prevScrollHeight;
+      isLoadingPrevious = false;
+      topLoader.style.display = "none";
+    });
   }
 });
 
-
 function loadInitialMessages(callback = () => {}) {
-  const chatWindow = document.getElementById("chatWindow");
   chatWindow.innerHTML = "";
 
   const ref = db.ref("messages").orderByChild("timestamp").limitToLast(batch_size);
@@ -19,6 +32,7 @@ function loadInitialMessages(callback = () => {}) {
 
   let count = 0;
   let lastDate = "";
+
   ref.on("child_added", snapshot => {
     const id = snapshot.key;
     const msg = snapshot.val();
@@ -28,8 +42,6 @@ function loadInitialMessages(callback = () => {}) {
       earliestTimestamp = msg.timestamp;
       lastKnownDate = dateStr;
       lastDate = lastKnownDate;
-      console.log("initial inside timestamp:", lastKnownDate);
-      console.log(earliestTimestamp);
     }
 
     if (dateStr !== lastDate && count > 0) {
@@ -38,7 +50,6 @@ function loadInitialMessages(callback = () => {}) {
       separator.className = "date-separator text-center my-2 text-muted";
       separator.innerText = dateStr;
       chatWindow.appendChild(separator);
-      console.log("initial inside:", lastKnownDate);
     }
 
     const div = createMessageElement(msg, id);
@@ -50,7 +61,11 @@ function loadInitialMessages(callback = () => {}) {
     }
 
     count++;
-    scrollToBottom();
+
+    if (isFirstLoad) {
+      scrollToBottom();
+    }
+
     callback();
   });
 
@@ -63,18 +78,15 @@ function loadInitialMessages(callback = () => {}) {
       const newDiv = createMessageElement(msg, id);
       chatWindow.replaceChild(newDiv, oldDiv);
       messageMap[id] = newDiv;
-      scrollToBottom();
     }
   });
 
-  // This log runs before any child_added events fire
-  console.log("initial:", lastKnownDate);
+  isFirstLoad = false;
 }
 
 function listenForMessages(callback = () => {}) {
   loadInitialMessages(callback);
 }
-
 
 function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
   const ref = db
@@ -99,17 +111,19 @@ function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
 
     earliestTimestamp = newEarliest;
 
+    let lastDate = lastKnownDate;
     let count = 0;
+
     messages.reverse().forEach(({ id, ...msg }) => {
       const dateStr = formatChatDate(msg.timestamp);
       count++;
 
-      if (dateStr !== lastKnownDate && count < batch_size) {
+      if (dateStr !== lastDate && count > 1) {
         const separator = document.createElement("div");
         separator.className = "date-separator text-center my-2 text-muted";
-        separator.innerText = lastKnownDate;
-        lastKnownDate = dateStr;
+        separator.innerText = dateStr;
         chatWindow.insertBefore(separator, chatWindow.firstChild);
+        lastDate = dateStr;
       }
 
       const div = createMessageElement(msg, id);
@@ -117,7 +131,11 @@ function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
       messageMap[id] = div;
     });
 
-    console.log("previous:", lastKnownDate);
+    lastKnownDate = lastDate;
     callback();
   });
+}
+
+function scrollToBottom() {
+  chatWindow.scrollTop = chatWindow.scrollHeight;
 }
