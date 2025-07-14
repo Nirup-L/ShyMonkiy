@@ -62,6 +62,7 @@ window.addEventListener("beforeunload", () => {
   localStorage.removeItem("currentUser");
   localStorage.removeItem("draftMessage");
   setPresence(currentUser, false);
+  logout();
 });
 //login
 function login() {
@@ -98,6 +99,10 @@ function logout() {
   localStorage.removeItem("draftMessage");
   setPresence(user, false); // Now this has a valid value
   location.reload();
+  document.getElementById("loginPage").style.display = "block";
+  document.getElementById("gallery").style.display = "none"; // Show gallery
+  document.getElementById("chatApp").style.display = "none"; // Hide chat
+
 }
 
 window.addEventListener("beforeunload", () => {
