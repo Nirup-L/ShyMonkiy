@@ -53,7 +53,6 @@ function startInactivityTimer() {
       }, 3 * 60 * 1000); // 3 minutes
     } else {
       clearTimeout(inactivityTimer);
-      goToChat();
     }
   });
 }
@@ -63,6 +62,7 @@ window.addEventListener("beforeunload", () => {
   localStorage.removeItem("draftMessage");
   setPresence(currentUser, false);
   logout();
+  location.reload();
 });
 //login
 function login() {
@@ -281,15 +281,14 @@ chatWindow.addEventListener("scroll", () => {
 });
 
 function loadInitialMessages(callback = () => {}) {
+  const chatWindow = document.getElementById("chatWindow");
   chatWindow.innerHTML = "";
-  const topLoader = document.getElementById("topLoader");
-  topLoader.style.display = "block";
+
   const ref = db.ref("messages").orderByChild("timestamp").limitToLast(batch_size);
   ref.off();
 
   let count = 0;
   let lastDate = "";
-
   ref.on("child_added", snapshot => {
     const id = snapshot.key;
     const msg = snapshot.val();
@@ -299,6 +298,8 @@ function loadInitialMessages(callback = () => {}) {
       earliestTimestamp = msg.timestamp;
       lastKnownDate = dateStr;
       lastDate = lastKnownDate;
+      console.log("initial inside timestamp:", lastKnownDate);
+      console.log(earliestTimestamp);
     }
 
     if (dateStr !== lastDate && count > 0) {
@@ -307,6 +308,7 @@ function loadInitialMessages(callback = () => {}) {
       separator.className = "date-separator text-center my-2 text-muted";
       separator.innerText = dateStr;
       chatWindow.appendChild(separator);
+      console.log("initial inside:", lastKnownDate);
     }
 
     const div = createMessageElement(msg, id);
@@ -318,8 +320,7 @@ function loadInitialMessages(callback = () => {}) {
     }
 
     count++;
-      scrollToBottom();
-
+    scrollToBottom();
     callback();
   });
 
@@ -332,13 +333,13 @@ function loadInitialMessages(callback = () => {}) {
       const newDiv = createMessageElement(msg, id);
       chatWindow.replaceChild(newDiv, oldDiv);
       messageMap[id] = newDiv;
+      scrollToBottom();
     }
   });
 
-  isFirstLoad = false;
-  topLoader.style.display = "none";
+  // This log runs before any child_added events fire
+  console.log("initial:", lastKnownDate);
 }
-
 function listenForMessages(callback = () => {}) {
   loadInitialMessages(callback);
 }
@@ -366,19 +367,17 @@ function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
 
     earliestTimestamp = newEarliest;
 
-    let lastDate = lastKnownDate;
     let count = 0;
-
     messages.reverse().forEach(({ id, ...msg }) => {
       const dateStr = formatChatDate(msg.timestamp);
       count++;
 
-      if (dateStr !== lastDate && count > 1) {
+      if (dateStr !== lastKnownDate && count < batch_size) {
         const separator = document.createElement("div");
         separator.className = "date-separator text-center my-2 text-muted";
-        separator.innerText = dateStr;
+        separator.innerText = lastKnownDate;
+        lastKnownDate = dateStr;
         chatWindow.insertBefore(separator, chatWindow.firstChild);
-        lastDate = dateStr;
       }
 
       const div = createMessageElement(msg, id);
@@ -386,7 +385,7 @@ function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
       messageMap[id] = div;
     });
 
-    lastKnownDate = lastDate;
+    console.log("previous:", lastKnownDate);
     callback();
   });
 }
