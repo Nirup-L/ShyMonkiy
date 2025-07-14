@@ -313,10 +313,7 @@ function loadInitialMessages(callback = () => {}) {
     }
 
     count++;
-
-    if (isFirstLoad) {
       scrollToBottom();
-    }
 
     callback();
   });
