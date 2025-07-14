@@ -53,6 +53,7 @@ function startInactivityTimer() {
       }, 3 * 60 * 1000); // 3 minutes
     } else {
       clearTimeout(inactivityTimer);
+      goToChat();
     }
   });
 }
@@ -80,11 +81,11 @@ function login() {
     topLoader.style.display = "block";
     listenForMessages(() => setTimeout(scrollToBottom, 300));
     listenToTyping();
+    scrollToBottom();
     listenToPresence();
     setPresence(currentUser, true);
     startInactivityTimer();
     imguploadbtn();
-   
   } else {
     document.getElementById("loginError").innerText = "Invalid user Credentials";
   }
