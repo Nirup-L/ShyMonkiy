@@ -3,6 +3,7 @@ const USERS = {
   "Sharmila": "nila2234"
 };
 
+login();
 
 let currentUser = localStorage.getItem("currentUser") || "";
 let inactivityTimer;
@@ -25,7 +26,6 @@ window.addEventListener("DOMContentLoaded", () => {
     setPresence(currentUser, true);
     startInactivityTimer();
     imguploadbtn();
-    login();
   }
 });
 
