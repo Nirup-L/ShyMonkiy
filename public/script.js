@@ -3,14 +3,14 @@ const USERS = {
   "Sharmila": "nila2234"
 };
 
-login();
+
 
 let currentUser = localStorage.getItem("currentUser") || "";
 let inactivityTimer;
 let lastMessageDate = "";
 let typingTimeout;
 const chatWindow = document.getElementById("chatWindow");
-
+login();
 window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
     document.getElementById("loginPage").style.display = "none";
