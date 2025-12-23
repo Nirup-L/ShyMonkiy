@@ -4,7 +4,6 @@ const USERS = {
 };
 
 
-
 let currentUser = localStorage.getItem("currentUser") || "";
 let inactivityTimer;
 let lastMessageDate = "";
