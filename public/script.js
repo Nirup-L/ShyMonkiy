@@ -25,6 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
     setPresence(currentUser, true);
     startInactivityTimer();
     imguploadbtn();
+    login();
   }
 });
 
@@ -66,10 +67,10 @@ window.addEventListener("beforeunload", () => {
 });
 //login
 function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-  //const user = "Nirup"
-  //const pass = "nila2234"
+  //const user = document.getElementById("username").value;
+  //const pass = document.getElementById("password").value;
+  const user = "Nirup"
+  const pass = "nila2234"
   if (USERS[user] === pass) {
     currentUser = user;
     localStorage.setItem("currentUser", currentUser);
