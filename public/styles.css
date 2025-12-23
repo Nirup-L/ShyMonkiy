@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Meow+Script&display=swap');
 body, html {
   height: 100%;
   margin: 0;
@@ -169,20 +170,43 @@ textarea#messageInput {
 
 #marriageCountdown
 {
-  width: fit-content;
-  padding: 7px 20px;
-  background-color: rgb(0, 123, 255);
-  color: #ffffff;
+  width:80%;
+  padding: 5px 5px;
+  background-color: rgb(255, 251, 231);
+  color: #5c5c5c;
   font-weight: bold;
   font-size: small;
-  border-radius: 30px;
+  border-radius: 10px;
   align-self: center;
   font-family: "Poppins" , 'sans-serif';
   position: absolute;
   z-index: 999;
   display: block;
+  text-align: center;
 }
 
+#countdownTimer
+{
+  display:flex;
+  font-size: 30px;
+  padding:0;
+}
+
+.timerText
+{
+  font-size: x-small;
+  color:rgb(78, 73, 46);
+}
+
+.special
+{
+  font-family: "Meow Script", cursive;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 30px;
+  color: #ff0000;
+  padding:0;
+}
 
 #logout-btn
 {

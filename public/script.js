@@ -27,9 +27,6 @@ window.addEventListener("DOMContentLoaded", () => {
     startInactivityTimer();
     imguploadbtn();
   }
-  else{
-    login();
-  }
 });
 function goToGallery() {
   document.getElementById("chatApp").style.display = "none";
@@ -68,10 +65,10 @@ window.addEventListener("beforeunload", () => {
 });
 //login
 function login() {
-  //const user = document.getElementById("username").value;
-  //const pass = document.getElementById("password").value;
-  const user = "Nirup"
-  const pass = "nila2234"
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  //const user = "Nirup"
+  //const pass = "nila2234"
   if (USERS[user] === pass) {
     currentUser = user;
     localStorage.setItem("currentUser", currentUser);
@@ -104,7 +101,6 @@ function logout() {
   document.getElementById("loginPage").style.display = "block";
   document.getElementById("gallery").style.display = "none"; // Show gallery
   document.getElementById("chatApp").style.display = "none"; // Hide chat
-  login();
 }
 
 window.addEventListener("beforeunload", () => {
@@ -886,7 +882,6 @@ function uploadFiles(files) {
   progressContainer.style.display = "block";
   progressBar.style.width = "0%";
   progressBar.style.height = "10px";
-
   let uploaded = 0;
 
   files.forEach(file => {
@@ -936,8 +931,16 @@ const days = Math.floor(distance / (1000 * 60 * 60 * 24));
 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))+(24*days); 
 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); 
 const seconds = Math.floor((distance % (1000 * 60)) / 1000); 
+
+timeHour = document.getElementById("hours")
+timeMinute = document.getElementById("minutes")
+timeSecond = document.getElementById("seconds")
+
 // Display result 
-document.getElementById("marriageCountdown").innerHTML = String(hours).padStart(2, '0') + ":" + String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0'); 
+timeHour.innerHTML = String(hours).padStart(2, '0')+'<p class="timerText">hours</p>';
+timeMinute.innerHTML = String(minutes).padStart(2, '0')+'<p class="timerText">minutes</p>'; 
+timeSecond.innerHTML = String(seconds).padStart(2, '0')+'<p class="timerText">seconds</p>'; 
+
 // If countdown finished 
 if (distance < 0) { 
   clearInterval(timer); 
