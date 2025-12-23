@@ -10,7 +10,7 @@ let inactivityTimer;
 let lastMessageDate = "";
 let typingTimeout;
 const chatWindow = document.getElementById("chatWindow");
-login();
+
 window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
     document.getElementById("loginPage").style.display = "none";
@@ -27,14 +27,15 @@ window.addEventListener("DOMContentLoaded", () => {
     startInactivityTimer();
     imguploadbtn();
   }
+  else{
+    login();
+  }
 });
-
 function goToGallery() {
   document.getElementById("chatApp").style.display = "none";
   document.getElementById("gallery").style.display = "block";
   loadGallery(); 
 }
-
 
 function goToChat() {
   document.getElementById("gallery").style.display = "none";
@@ -103,7 +104,7 @@ function logout() {
   document.getElementById("loginPage").style.display = "block";
   document.getElementById("gallery").style.display = "none"; // Show gallery
   document.getElementById("chatApp").style.display = "none"; // Hide chat
-
+  login();
 }
 
 window.addEventListener("beforeunload", () => {
@@ -924,5 +925,22 @@ function uploadFiles(files) {
   });
 }
 
+
+// Set the target date and time (YYYY-MM-DD HH:MM:SS format) 
+const targetDate = new Date("2025-12-24T15:00:00").getTime(); 
+// Update countdown every second 
+const timer = setInterval(() => { const now = new Date().getTime(); 
+const distance = targetDate - now; 
+// Calculate days, hours, minutes, seconds 
+const days = Math.floor(distance / (1000 * 60 * 60 * 24)); 
+const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))+(24*days); 
+const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); 
+const seconds = Math.floor((distance % (1000 * 60)) / 1000); 
+// Display result 
+document.getElementById("marriageCountdown").innerHTML = String(hours).padStart(2, '0') + ":" + String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0'); 
+// If countdown finished 
+if (distance < 0) { 
+  clearInterval(timer); 
+  document.getElementById("marriageCountdown").innerHTML = "Countdown Finished!"; } }, 1000);
 
 window.addEventListener('resize', () => setTimeout(scrollToBottom, 100));
