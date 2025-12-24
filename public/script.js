@@ -958,7 +958,7 @@ function applyTimeValue(element,value)
 countdownDiv = document.getElementById("marriageCountdown");
 floaterDiv = document.getElementById("floater");
 // Set the target date and time (YYYY-MM-DD HH:MM:SS format)
-const targetDate = new Date("2025-12-24T15:00:00").getTime();
+const targetDate = new Date("2025-12-24T16:00:00").getTime();
 // Update countdown every second
 const timer = setInterval(() => {
   const now = new Date().getTime();
@@ -1009,24 +1009,18 @@ floaterDiv.onclick = () => {
   hideFloater();
 }
 
-  countdownDiv.addEventListener("touchstart", handlecdTouchStart, false);
-  countdownDiv.addEventListener("touchmove", (e) => handlecdTouchEnd(e), false);
-  let xDown = null;
-  function handlecdTouchStart(evt) {
-    xDown = evt.touches[0].clientX;
-  }
 
-  function handlecdTouchEnd(evt) {
-    if (!xDown) return;
-
-    let xUp = evt.changedTouches[0].clientX;
-    let xDiff = xUp - xDown;
-
-    if (xDiff > 120 || xDiff < -120) {
+  let startX = 0; 
+  countdownDiv.addEventListener("touchstart", (e) => { 
+    startX = e.touches[0].clientX; 
+    }); 
+  countdownDiv.addEventListener("touchend", (e) => { 
+    const endX = e.changedTouches[0].clientX; 
+    const diffX = endX - startX; 
+    if (diffX > 50) { 
+      // threshold to detect swipe // 👉 Action when swiped right 
       hideCountdown();
       showFloater();
-    }
+      } });
 
-    xDown = null;
-  }
 window.addEventListener("resize", () => setTimeout(scrollToBottom, 100));
