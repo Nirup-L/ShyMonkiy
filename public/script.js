@@ -1,8 +1,7 @@
 const USERS = {
-  "Nirup": "nila2234",
-  "Sharmila": "nila2234"
+  Nirup: "nila2234",
+  Sharmila: "nila2234",
 };
-
 
 let currentUser = localStorage.getItem("currentUser") || "";
 let inactivityTimer;
@@ -15,7 +14,8 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none";
     document.getElementById("chatApp").style.display = "block";
-    document.getElementById("messageInput").value = localStorage.getItem("draftMessage") || "";
+    document.getElementById("messageInput").value =
+      localStorage.getItem("draftMessage") || "";
     adjustTextarea(document.getElementById("messageInput"));
     const topLoader = document.getElementById("topLoader");
     topLoader.style.display = "block";
@@ -30,7 +30,7 @@ window.addEventListener("DOMContentLoaded", () => {
 function goToGallery() {
   document.getElementById("chatApp").style.display = "none";
   document.getElementById("gallery").style.display = "block";
-  loadGallery(); 
+  loadGallery();
 }
 
 function goToChat() {
@@ -41,14 +41,15 @@ function goToChat() {
   listenForMessages(); // Re-attach listener // <- add this// Ensure listener re-attaches properly
 }
 
-
-
 function startInactivityTimer() {
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
-      inactivityTimer = setTimeout(() => {
-        logout();
-      }, 3 * 60 * 1000); // 3 minutes
+      inactivityTimer = setTimeout(
+        () => {
+          logout();
+        },
+        3 * 60 * 1000,
+      ); // 3 minutes
     } else {
       clearTimeout(inactivityTimer);
     }
@@ -86,10 +87,10 @@ function login() {
     startInactivityTimer();
     imguploadbtn();
   } else {
-    document.getElementById("loginError").innerText = "Invalid user Credentials";
+    document.getElementById("loginError").innerText =
+      "Invalid user Credentials";
   }
 }
-
 
 function logout() {
   const user = localStorage.getItem("currentUser"); // Save before clearing
@@ -108,7 +109,6 @@ window.addEventListener("beforeunload", () => {
     setPresence(user, false);
   }
 });
-
 
 function setPresence(user, isOnline) {
   const ref = db.ref(`presence/${user}`);
@@ -153,8 +153,8 @@ function sendMessage() {
   const replyInfo = window.replyToMessage || null;
   if (files.length > 0) {
     files.forEach((file) => {
-      const msgId = db.ref().child('messages').push().key;
-      const ref = storage.ref('uploads/' + msgId + "_" + file.name);
+      const msgId = db.ref().child("messages").push().key;
+      const ref = storage.ref("uploads/" + msgId + "_" + file.name);
       const uploadTask = ref.put(file);
 
       const progressWrapper = document.createElement("div");
@@ -174,37 +174,43 @@ function sendMessage() {
       document.getElementById("chatWindow").appendChild(progressWrapper);
       scrollToBottom();
 
-      uploadTask.on('state_changed', snapshot => {
-        const percent = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0);
-        progressInner.style.width = percent + "%";
-        progressInner.innerText = percent + "%";
-      }, console.error, () => {
-        ref.getDownloadURL().then(url => {
-          db.ref('messages/' + msgId).set({
-            sender: currentUser,
-            fileURL: url,
-            fileName: file.name,
-            type: file.type,
-            timestamp: Date.now()
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const percent = (
+            (snapshot.bytesTransferred / snapshot.totalBytes) *
+            100
+          ).toFixed(0);
+          progressInner.style.width = percent + "%";
+          progressInner.innerText = percent + "%";
+        },
+        console.error,
+        () => {
+          ref.getDownloadURL().then((url) => {
+            db.ref("messages/" + msgId).set({
+              sender: currentUser,
+              fileURL: url,
+              fileName: file.name,
+              type: file.type,
+              timestamp: Date.now(),
+            });
+            progressWrapper.remove(); // Remove local-only preview
           });
-          progressWrapper.remove(); // Remove local-only preview
-        });
-      });
+        },
+      );
     });
-  } 
-  else if(msgText.trim()===USERS[currentUser]){
-     goToGallery();
-    }
-    else if (msgText.trim()) {
-    const msgId = db.ref().child('messages').push().key;
-    db.ref('messages/' + msgId).set({
+  } else if (msgText.trim() === USERS[currentUser]) {
+    goToGallery();
+  } else if (msgText.trim()) {
+    const msgId = db.ref().child("messages").push().key;
+    db.ref("messages/" + msgId).set({
       sender: currentUser,
       text: msgText.trim(),
       timestamp: Date.now(),
-      replyTo: replyInfo
+      replyTo: replyInfo,
     });
   }
- 
+
   // Don't manually render the message, just reset input
   db.ref(`typing/${currentUser}`).remove();
   cancelReply();
@@ -219,7 +225,6 @@ function sendMessage() {
   }, 100);
 }
 
-
 function cancelReply() {
   document.getElementById("replyPreview").style.display = "none";
   document.getElementById("replyText").innerText = "";
@@ -232,7 +237,7 @@ function handleFileSelection() {
   const preview = document.getElementById("filePreview");
 
   if (files.length > 0) {
-    preview.innerHTML = files.map(file => `📎 ${file.name}`).join("<br>");
+    preview.innerHTML = files.map((file) => `📎 ${file.name}`).join("<br>");
     preview.style.display = "block";
   } else {
     preview.innerHTML = "";
@@ -240,17 +245,18 @@ function handleFileSelection() {
   }
 }
 
-
-
 document.getElementById("messageInput").addEventListener("input", () => {
-  localStorage.setItem("draftMessage", document.getElementById("messageInput").value);
+  localStorage.setItem(
+    "draftMessage",
+    document.getElementById("messageInput").value,
+  );
   sendTyping();
   adjustTextarea(document.getElementById("messageInput"));
 });
 
 function adjustTextarea(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 130) + 'px';
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 130) + "px";
 }
 
 let earliestTimestamp = Infinity;
@@ -281,12 +287,15 @@ function loadInitialMessages(callback = () => {}) {
   const chatWindow = document.getElementById("chatWindow");
   chatWindow.innerHTML = "";
 
-  const ref = db.ref("messages").orderByChild("timestamp").limitToLast(batch_size);
+  const ref = db
+    .ref("messages")
+    .orderByChild("timestamp")
+    .limitToLast(batch_size);
   ref.off();
 
   let count = 0;
   let lastDate = "";
-  ref.on("child_added", snapshot => {
+  ref.on("child_added", (snapshot) => {
     const id = snapshot.key;
     const msg = snapshot.val();
     const dateStr = formatChatDate(msg.timestamp);
@@ -321,7 +330,7 @@ function loadInitialMessages(callback = () => {}) {
     callback();
   });
 
-  ref.on("child_changed", snapshot => {
+  ref.on("child_changed", (snapshot) => {
     const id = snapshot.key;
     const msg = snapshot.val();
 
@@ -348,11 +357,11 @@ function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
     .endAt(earliestTimeStamp - 1)
     .limitToLast(batch_size);
 
-  ref.once("value", snapshot => {
+  ref.once("value", (snapshot) => {
     const messages = [];
     let newEarliest = earliestTimestamp;
 
-    snapshot.forEach(child => {
+    snapshot.forEach((child) => {
       const id = child.key;
       const msg = child.val();
       messages.push({ id, ...msg });
@@ -387,7 +396,6 @@ function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
   });
 }
 
-
 function truncateWithEllipsis(str, maxLength) {
   if (str.length > maxLength) {
     return str.slice(0, maxLength) + "...";
@@ -396,7 +404,8 @@ function truncateWithEllipsis(str, maxLength) {
 }
 
 function isOnlyEmoji(text) {
-  const emojiRegex = /^(?:\s*(?:\p{Emoji}(?:\p{Emoji_Modifier}|[\uFE0F])*)\s*)+$/u;
+  const emojiRegex =
+    /^(?:\s*(?:\p{Emoji}(?:\p{Emoji_Modifier}|[\uFE0F])*)\s*)+$/u;
   return emojiRegex.test(text.trim());
 }
 
@@ -409,82 +418,79 @@ function escapeHTML(text) {
 function linkify(text) {
   const urlRegex = /(\bhttps?:\/\/[^\s<]+)/gi;
   return escapeHTML(text).replace(urlRegex, (url) => {
-    const cleanUrl = url.replace(/[\u200B-\u200D\uFEFF]/g, '');
+    const cleanUrl = url.replace(/[\u200B-\u200D\uFEFF]/g, "");
     return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${cleanUrl}</a>`;
   });
 }
 
-
 function createMessageElement(msg, id) {
   const div = document.createElement("div");
-  div.className = `message ${msg.sender === currentUser ? 'you' : 'them'}`;
+  div.className = `message ${msg.sender === currentUser ? "you" : "them"}`;
   div.setAttribute("data-id", id);
 
   if (msg.replyTo) {
-  const replyDiv = document.createElement("div");
-  replyDiv.className = "reply-preview";
-  replyDiv.style.fontSize = "0.70 rem";
-  replyDiv.style.padding = "4px 8px";
-  if(msg.sender === currentUser){
-  replyDiv.style.background = "#001c78";
-  }
-  else{
-    replyDiv.style.background = "#550080";
-  }
-  replyDiv.style.borderLeft = "3px solid #aaa";
-  replyDiv.style.marginBottom = "4px";
-  replyDiv.style.borderRadius = "5px";
-  replyDiv.style.cursor = "pointer";
-
-  const replyRef = db.ref('messages/' + msg.replyTo);
-  replyRef.once("value").then(snapshot => {
-    const original = snapshot.val();
-    if (original) {
-      let previewContent = `${original.sender}: `;
-
-      if (original.text) {
-        previewContent += truncateWithEllipsis(original.text, 60);
-      } else if (original.type?.startsWith("image/")) {
-        previewContent += "Image";
-      } else if (original.type?.startsWith("video/")) {
-        previewContent += "Video";
-      } else if (original.type?.startsWith("audio/")) {
-        previewContent += "Audio";
-      } else if (original.fileName) {
-        previewContent += `📎 ${original.fileName}`;
-      }
-
-      replyDiv.innerText = previewContent;
-
-      // Tap to scroll to original message
-      replyDiv.onclick = () => {
-        const target = document.querySelector(`[data-id="${msg.replyTo}"]`);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          target.classList.add("highlight");
-          setTimeout(() => target.classList.remove("highlight"), 2000);
-        }
-      };
+    const replyDiv = document.createElement("div");
+    replyDiv.className = "reply-preview";
+    replyDiv.style.fontSize = "0.70 rem";
+    replyDiv.style.padding = "4px 8px";
+    if (msg.sender === currentUser) {
+      replyDiv.style.background = "#001c78";
     } else {
-      replyDiv.innerText = "Message not found";
+      replyDiv.style.background = "#550080";
     }
-  });
+    replyDiv.style.borderLeft = "3px solid #aaa";
+    replyDiv.style.marginBottom = "4px";
+    replyDiv.style.borderRadius = "5px";
+    replyDiv.style.cursor = "pointer";
 
-  div.appendChild(replyDiv);
-}
+    const replyRef = db.ref("messages/" + msg.replyTo);
+    replyRef.once("value").then((snapshot) => {
+      const original = snapshot.val();
+      if (original) {
+        let previewContent = `${original.sender}: `;
 
+        if (original.text) {
+          previewContent += truncateWithEllipsis(original.text, 60);
+        } else if (original.type?.startsWith("image/")) {
+          previewContent += "Image";
+        } else if (original.type?.startsWith("video/")) {
+          previewContent += "Video";
+        } else if (original.type?.startsWith("audio/")) {
+          previewContent += "Audio";
+        } else if (original.fileName) {
+          previewContent += `📎 ${original.fileName}`;
+        }
 
-if (msg.text) {
-  const textP = document.createElement("p");
-  textP.style.whiteSpace = "pre-wrap"; // preserves spaces and line breaks
-  textP.innerHTML = linkify(msg.text);
+        replyDiv.innerText = previewContent;
 
-  if (isOnlyEmoji(msg.text)) {
-    div.classList.add("emoji-only");
+        // Tap to scroll to original message
+        replyDiv.onclick = () => {
+          const target = document.querySelector(`[data-id="${msg.replyTo}"]`);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
+            target.classList.add("highlight");
+            setTimeout(() => target.classList.remove("highlight"), 2000);
+          }
+        };
+      } else {
+        replyDiv.innerText = "Message not found";
+      }
+    });
+
+    div.appendChild(replyDiv);
   }
 
-  div.appendChild(textP);
-}
+  if (msg.text) {
+    const textP = document.createElement("p");
+    textP.style.whiteSpace = "pre-wrap"; // preserves spaces and line breaks
+    textP.innerHTML = linkify(msg.text);
+
+    if (isOnlyEmoji(msg.text)) {
+      div.classList.add("emoji-only");
+    }
+
+    div.appendChild(textP);
+  }
 
   if (msg.fileURL && msg.type?.startsWith("image/")) {
     const img = new Image();
@@ -502,7 +508,7 @@ if (msg.text) {
     const wrapper = document.createElement("div");
     wrapper.style.position = "relative";
     wrapper.style.display = "inline-block";
-    
+
     const video = document.createElement("video");
     video.src = msg.fileURL;
     video.controls = true;
@@ -521,57 +527,61 @@ if (msg.text) {
   }
 
   const time = formatTimestamp(msg.timestamp || Date.now());
-  const seen = msg.seenBy && msg.sender === currentUser && getOtherUser() in msg.seenBy;
+  const seen =
+    msg.seenBy && msg.sender === currentUser && getOtherUser() in msg.seenBy;
 
   const status = document.createElement("div");
   status.className = "seen-status";
-  status.innerText = msg.sender === currentUser ? `${time} • ${seen ? 'Seen' : 'Delivered'}` : time;
+  status.innerText =
+    msg.sender === currentUser
+      ? `${time} • ${seen ? "Seen" : "Delivered"}`
+      : time;
   div.addEventListener("touchstart", handleTouchStart, false);
-div.addEventListener("touchend", (e) => handleTouchEnd(e, msg, id), false);
+  div.addEventListener("touchend", (e) => handleTouchEnd(e, msg, id), false);
 
-let xDown = null;
+  let xDown = null;
 
-function handleTouchStart(evt) {
-  xDown = evt.touches[0].clientX;
-}
-
-function handleTouchEnd(evt, msg, id) {
-  if (!xDown) return;
-
-  let xUp = evt.changedTouches[0].clientX;
-  let xDiff = xUp - xDown;
-
-  if (xDiff > 120 || xDiff < -120) {
-    showReplyPreview(msg, id);
+  function handleTouchStart(evt) {
+    xDown = evt.touches[0].clientX;
   }
 
-  xDown = null;
-}
+  function handleTouchEnd(evt, msg, id) {
+    if (!xDown) return;
+
+    let xUp = evt.changedTouches[0].clientX;
+    let xDiff = xUp - xDown;
+
+    if (xDiff > 120 || xDiff < -120) {
+      showReplyPreview(msg, id);
+    }
+
+    xDown = null;
+  }
   div.appendChild(status);
   return div;
 }
 
-
 function showReplyPreview(msg, id) {
   document.getElementById("replyPreview").style.display = "block";
-  document.getElementById("replyText").innerText = `${msg.sender}: ${truncateWithEllipsis(msg.text, 60) || msg.fileName || "[media]"}`;
+  document.getElementById("replyText").innerText =
+    `${msg.sender}: ${truncateWithEllipsis(msg.text, 60) || msg.fileName || "[media]"}`;
   window.replyToMessage = id;
   document.getElementById("messageInput").focus();
 }
 
-
 function markAsSeen(messageId) {
   const path = `messages/${messageId}/seenBy/${currentUser}`;
-  db.ref(path).once("value").then(snapshot => {
-    if (!snapshot.exists()) {
-      db.ref(path).set(true);
-    }
-  });
+  db.ref(path)
+    .once("value")
+    .then((snapshot) => {
+      if (!snapshot.exists()) {
+        db.ref(path).set(true);
+      }
+    });
 }
 
-
 function getOtherUser() {
-  return Object.keys(USERS).find(user => user !== currentUser);
+  return Object.keys(USERS).find((user) => user !== currentUser);
 }
 
 function showContextMenu(x, y, msg, id) {
@@ -581,8 +591,8 @@ function showContextMenu(x, y, msg, id) {
   menu = document.createElement("div");
   menu.id = "contextMenu";
   menu.className = "context-menu";
-  menu.style.top = y + 'px';
-  menu.style.left = x + 'px';
+  menu.style.top = y + "px";
+  menu.style.left = x + "px";
   menu.innerHTML = `
     <div onclick="copyMessage('${msg.text || msg.fileName || ""}')">Copy</div>
     <div onclick="cutMessage('${id}')">Cut</div>
@@ -616,7 +626,7 @@ function sendTyping() {
 
 function listenToTyping() {
   const typingRef = db.ref("typing");
-  typingRef.on("value", snapshot => {
+  typingRef.on("value", (snapshot) => {
     const typingUsers = snapshot.val() || {};
     const indicator = document.getElementById("typingIndicator");
     const othersTyping = Object.entries(typingUsers)
@@ -629,7 +639,7 @@ function listenToTyping() {
 
 function formatTimestamp(ts) {
   const date = new Date(ts);
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function formatLastSeen(ts) {
@@ -637,12 +647,16 @@ function formatLastSeen(ts) {
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
   if (isToday) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   } else {
-    return date.toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleString([], {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 }
-
 
 const scrollBtn = document.getElementById("scrollToBottomBtn");
 
@@ -671,7 +685,6 @@ scrollBtn.addEventListener("click", () => {
   chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: "smooth" });
 });
 
-
 function formatChatDate(timestamp) {
   const date = new Date(timestamp);
   const today = new Date();
@@ -681,9 +694,9 @@ function formatChatDate(timestamp) {
   if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
 
   return date.toLocaleDateString(undefined, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 }
 
@@ -693,47 +706,51 @@ function loadGallery() {
 
   const mediaItems = [];
 
-  db.ref("messages").orderByChild("timestamp").once("value", snapshot => {
-    snapshot.forEach(child => {
-      const msg = child.val();
-      if (msg.fileURL && (msg.type.startsWith("image/") || msg.type.startsWith("video/"))) {
-        mediaItems.push({
-          url: msg.fileURL,
-          type: msg.type,
-          name: msg.fileName || "",
-          timestamp: msg.timestamp || 0
-        });
-      }
-    });
+  db.ref("messages")
+    .orderByChild("timestamp")
+    .once("value", (snapshot) => {
+      snapshot.forEach((child) => {
+        const msg = child.val();
+        if (
+          msg.fileURL &&
+          (msg.type.startsWith("image/") || msg.type.startsWith("video/"))
+        ) {
+          mediaItems.push({
+            url: msg.fileURL,
+            type: msg.type,
+            name: msg.fileName || "",
+            timestamp: msg.timestamp || 0,
+          });
+        }
+      });
 
-    let lastDate = "";
+      let lastDate = "";
 
-mediaItems.reverse().forEach((item, index) => {
-  const mediaDate = formatChatDate(item.timestamp); // use same format function
+      mediaItems.reverse().forEach((item, index) => {
+        const mediaDate = formatChatDate(item.timestamp); // use same format function
 
-  if (mediaDate !== lastDate) {
-    lastDate = mediaDate;
-    const separator = document.createElement("div");
-    separator.className = "date-separator-gallery";
-    separator.innerText = mediaDate;
-    gallery.appendChild(separator);
-  }
+        if (mediaDate !== lastDate) {
+          lastDate = mediaDate;
+          const separator = document.createElement("div");
+          separator.className = "date-separator-gallery";
+          separator.innerText = mediaDate;
+          gallery.appendChild(separator);
+        }
 
-  const media = document.createElement("div");
-  media.className = "media-thumb";
-  media.innerHTML = item.type.startsWith("image/")
-    ? `<img src="${item.url}" onclick="openLightbox(${index})">`
-    : `<div class="video-wrapper" onclick="openLightbox(${index})">
+        const media = document.createElement("div");
+        media.className = "media-thumb";
+        media.innerHTML = item.type.startsWith("image/")
+          ? `<img src="${item.url}" onclick="openLightbox(${index})">`
+          : `<div class="video-wrapper" onclick="openLightbox(${index})">
          <video src="${item.url}" muted playsinline></video>
          <div class="play-overlay">▶</div>
        </div>`;
 
-  gallery.appendChild(media);
-});
+        gallery.appendChild(media);
+      });
 
-
-    window.mediaItems = mediaItems; // Store globally for swiping
-  });
+      window.mediaItems = mediaItems; // Store globally for swiping
+    });
 }
 
 function openLightbox(startIndex) {
@@ -794,14 +811,14 @@ function openLightbox(startIndex) {
     const diffX = xStart - xEnd;
 
     if (Math.abs(diffX) > 50) {
-      if (diffX > 0) current = Math.min(mediaItems.length - 1, current + 1); // Left swipe
+      if (diffX > 0)
+        current = Math.min(mediaItems.length - 1, current + 1); // Left swipe
       else current = Math.max(0, current - 1); // Right swipe
       render();
       xStart = null;
     }
   }
 }
-
 
 function imguploadbtn() {
   const uploadBtn = document.getElementById("galleryUploadBtn");
@@ -819,14 +836,14 @@ function previewBeforeUpload() {
   const preview = document.getElementById("galleryUploadPreview");
   const previewDiv = document.getElementById("galleryUpload");
   previewDiv.style.display = "grid";
-preview.style.display = "flex";
-preview.style.overflowX = "auto";
-preview.style.whiteSpace = "nowrap";
-preview.style.padding = "10px";
-preview.innerHTML = "";
+  preview.style.display = "flex";
+  preview.style.overflowX = "auto";
+  preview.style.whiteSpace = "nowrap";
+  preview.style.padding = "10px";
+  preview.innerHTML = "";
 
   // Preview thumbnails
-  files.forEach(file => {
+  files.forEach((file) => {
     if (file.type.startsWith("image/")) {
       const img = document.createElement("img");
       img.src = URL.createObjectURL(file);
@@ -838,8 +855,8 @@ preview.innerHTML = "";
       const video = document.createElement("video");
       video.src = URL.createObjectURL(file);
       video.controls = true;
-video.style.maxWidth = "100px";
-video.style.margin = "10px";
+      video.style.maxWidth = "100px";
+      video.style.margin = "10px";
 
       preview.appendChild(video);
     }
@@ -863,8 +880,8 @@ video.style.margin = "10px";
     document.getElementById("galleryFileInput").value = "";
     preview.innerHTML = "";
     preview.style.display = "none";
-    previewDiv.style.display="none";
-    previewDiv.innerHTML = `<div id="galleryUploadPreview" style="padding: 10px; display: none;"></div>`
+    previewDiv.style.display = "none";
+    previewDiv.innerHTML = `<div id="galleryUploadPreview" style="padding: 10px; display: none;"></div>`;
   };
 
   buttonWrapper.appendChild(confirmBtn);
@@ -883,66 +900,141 @@ function uploadFiles(files) {
   progressBar.style.height = "10px";
   let uploaded = 0;
 
-  files.forEach(file => {
-    const msgId = db.ref().child('messages').push().key;
-    const ref = storage.ref('uploads/' + msgId + "_" + file.name);
+  files.forEach((file) => {
+    const msgId = db.ref().child("messages").push().key;
+    const ref = storage.ref("uploads/" + msgId + "_" + file.name);
     const uploadTask = ref.put(file);
 
-    uploadTask.on('state_changed', snapshot => {
-      const percent = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0);
-      progressBar.style.width = percent + "%";
-    }, console.error, () => {
-      ref.getDownloadURL().then(url => {
-        db.ref('messages/' + msgId).set({
-          sender: currentUser,
-          fileURL: url,
-          fileName: file.name,
-          type: file.type,
-          timestamp: Date.now()
-        }).then(() => {
-          uploaded++;
-          if (uploaded === files.length) {
-            document.getElementById("galleryFileInput").value = "";
-            progressBar.style.width = "100%";
-            setTimeout(() => {
-              progressContainer.style.display = "none";
-              preview.style.display = "none";
-              preview.innerHTML = "";
-              previewDiv.style.display="none";
-              previewDiv.innerHTML = `<div id="galleryUploadPreview" style="padding: 10px; display: none;"></div>`
-              loadGallery();
-            }, 1000);
-          }
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const percent = (
+          (snapshot.bytesTransferred / snapshot.totalBytes) *
+          100
+        ).toFixed(0);
+        progressBar.style.width = percent + "%";
+      },
+      console.error,
+      () => {
+        ref.getDownloadURL().then((url) => {
+          db.ref("messages/" + msgId)
+            .set({
+              sender: currentUser,
+              fileURL: url,
+              fileName: file.name,
+              type: file.type,
+              timestamp: Date.now(),
+            })
+            .then(() => {
+              uploaded++;
+              if (uploaded === files.length) {
+                document.getElementById("galleryFileInput").value = "";
+                progressBar.style.width = "100%";
+                setTimeout(() => {
+                  progressContainer.style.display = "none";
+                  preview.style.display = "none";
+                  preview.innerHTML = "";
+                  previewDiv.style.display = "none";
+                  previewDiv.innerHTML = `<div id="galleryUploadPreview" style="padding: 10px; display: none;"></div>`;
+                  loadGallery();
+                }, 1000);
+              }
+            });
         });
-      });
-    });
+      },
+    );
   });
 }
 
+function applyTimeValue(element,value)
+{
+  for(i=0;i<element.length;i++)
+  {
+    element[i].innerHTML = value;
+  }
+}
 
-// Set the target date and time (YYYY-MM-DD HH:MM:SS format) 
-const targetDate = new Date("2025-12-24T15:00:00").getTime(); 
-// Update countdown every second 
-const timer = setInterval(() => { const now = new Date().getTime(); 
-const distance = targetDate - now; 
-// Calculate days, hours, minutes, seconds 
-const days = Math.floor(distance / (1000 * 60 * 60 * 24)); 
-const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))+(24*days); 
-const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); 
-const seconds = Math.floor((distance % (1000 * 60)) / 1000); 
 
-timeHour = document.getElementById("hours")
-timeMinute = document.getElementById("minutes")
-timeSecond = document.getElementById("seconds")
+countdownDiv = document.getElementById("marriageCountdown");
+floaterDiv = document.getElementById("floater");
+// Set the target date and time (YYYY-MM-DD HH:MM:SS format)
+const targetDate = new Date("2025-12-24T15:00:00").getTime();
+// Update countdown every second
+const timer = setInterval(() => {
+  const now = new Date().getTime();
+  const distance = targetDate - now;
+  // Calculate days, hours, minutes, seconds
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours =
+    Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) +
+    24 * days;
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-// Display result 
-timeHour.innerHTML = String(hours).padStart(2, '0')+'<p class="timerText">hours</p>';
-timeMinute.innerHTML = String(minutes).padStart(2, '0')+'<p class="timerText">minutes</p>'; 
-timeSecond.innerHTML = String(seconds).padStart(2, '0')+'<p class="timerText">seconds</p>'; 
+  timeHour = document.getElementsByClassName("hours");
+  timeMinute = document.getElementsByClassName("minutes");
+  timeSecond = document.getElementsByClassName("seconds");
+  // Display result
+    applyTimeValue(timeHour,String(hours).padStart(2, "0") + '<p class="timerText">hours</p>');
+    applyTimeValue(timeMinute,String(minutes).padStart(2, "0") + '<p class="timerText">minutes</p>');
+    applyTimeValue(timeSecond,String(seconds).padStart(2, "0") + '<p class="timerText">seconds</p>');
 
-// If countdown finished 
-if (distance < 0) { 
-  clearInterval(timer); 
-  document.getElementById("marriageCountdown").innerHTML = "Countdown Finished!"; } }, 1000);
+  // If countdown finished
+  if (distance < 0) {
+    clearInterval(timer);
+    countdownDiv.innerHTML = "Countdown Finished!";
+  }
+}, 1000);
 
-window.addEventListener('resize', () => setTimeout(scrollToBottom, 100));
+function showCountdown() {
+  countdownDiv.style.display = "block";
+  addSlidable(countdownDiv);
+}
+
+function hideCountdown() {
+  countdownDiv.style.display = "none";
+}
+
+function showFloater() {
+  floaterDiv.style.display = "flex";
+  addSlidable(countdownDiv);
+}
+
+function hideFloater() {
+  floaterDiv.style.display = "none";
+}
+
+floaterDiv.onclick = () => {
+  showCountdown();
+  hideFloater();
+}
+
+function addSlidable(component) {
+  component.addEventListener("touchstart", handleTouchStart, false);
+  component.addEventListener("touchmove", handleTouchMove, false);
+
+  let xStart = null;
+
+  function handleTouchStart(evt) {
+    const firstTouch = evt.touches[0];
+    xStart = firstTouch.clientX;
+  }
+
+  function handleTouchMove(evt) {
+    if (!xStart) return;
+    const xEnd = evt.touches[0].clientX;
+    const diffX = xStart - xEnd;
+
+    if (Math.abs(diffX) > 50) {
+      if (diffX > 0)
+        current = Math.min(mediaItems.length - 1, current + 1); // Left swipe
+      else current = Math.max(0, current - 1); // Right swipe
+      hideCountdown();
+      showFloater();
+      hideCountdown();
+      xStart = null;
+    }
+  }
+}
+
+window.addEventListener("resize", () => setTimeout(scrollToBottom, 100));

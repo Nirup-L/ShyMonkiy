@@ -73,14 +73,19 @@
       <div id="chatWindowContainer">
         <div id="topLoader" style="text-align:center;">Loading...</div>
 
-        <div id="marriageCountdown">
+        <div id="marriageCountdown" style="display:block">
           <div id="countdownTimer">
-            <div id="hours" style="flex:7"></div>
-            <div id="minutes" style="flex:7"></div>
-            <div id="seconds" style="flex:7"></div>
+            <div class="hours" style="flex:7"></div>
+            <div class="minutes" style="flex:7"></div>
+            <div class="seconds" style="flex:7"></div>
           </div>
           <div id="marriageText">until our<p class="special">Marriage</p></div>
         </div>
+        <div id="floater" style="display:none">
+        <div class="hours" style="flex:1"></div>
+            <div class="minutes" style="flex:1"></div>
+            <div class="seconds" style="flex:1"></div>
+      </div>
         <div id="chatWindow" class="py-3 chat-window overflow-auto"></div>
         <div id="filePreview" class="px-3 text-muted small" style="display:none;">
         </div>
