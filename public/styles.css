@@ -182,6 +182,11 @@ textarea#messageInput {
   text-align: center;
 }
 
+#marriageCountdown.slid { 
+  transform: translateX(150px); /* Slide to the right */ 
+  background-color: lightgreen; 
+}
+
 #countdownTimer {
   display: flex;
   font-size: 30px;

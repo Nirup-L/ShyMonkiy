@@ -1021,7 +1021,9 @@ let startX = 0;
     const endX = e.changedTouches[0].clientX; 
     const diffX = endX - startX; 
     if (diffX > 50) { 
+      countdownDiv.classList.add("slid");
       // threshold to detect swipe // 👉 Action when swiped right 
+      setTimeout(() => { countdownDiv.classList.remove("slid"); }, 1000);
       hideCountdown();
       showFloater();
       } });
