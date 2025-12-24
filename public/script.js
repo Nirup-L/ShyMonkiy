@@ -964,7 +964,6 @@ function applyTimeValue(element,value)
 
 function showCountdown() {
   countdownDiv.style.display = "block";
-  addSlidable(countdownDiv);
 }
 
 function hideCountdown() {
