@@ -972,10 +972,7 @@ function hideFloater() {
   floaterDiv.style.display = "none";
 }
 
-floaterDiv.onclick = () => {
-  showCountdown();
-  hideFloater();
-}
+
 
 
 countdownDiv = document.getElementById("marriageCountdown");
@@ -1008,6 +1005,12 @@ const timer = setInterval(() => {
     countdownDiv.innerHTML = "Countdown Finished!";
   }
 }, 1000);
+
+
+floaterDiv.onclick = () => {
+  showCountdown();
+  hideFloater();
+}
 
 let startX = 0; 
   countdownDiv.addEventListener("touchstart", (e) => { 
