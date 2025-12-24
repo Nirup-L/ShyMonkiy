@@ -1009,10 +1009,9 @@ floaterDiv.onclick = () => {
   hideFloater();
 }
 
-function addSlidable(component) {
-  component.addEventListener("touchstart", handlecdTouchStart, false);
-  component.addEventListener("touchmove", (e) => handlecdTouchEnd(e), false);
-
+  countdownDiv.addEventListener("touchstart", handlecdTouchStart, false);
+  countdownDiv.addEventListener("touchmove", (e) => handlecdTouchEnd(e), false);
+  let xDown = null;
   function handlecdTouchStart(evt) {
     xDown = evt.touches[0].clientX;
   }
@@ -1024,13 +1023,10 @@ function addSlidable(component) {
     let xDiff = xUp - xDown;
 
     if (xDiff > 120 || xDiff < -120) {
-      showFloater();
       hideCountdown();
+      showFloater();
     }
 
     xDown = null;
   }
-}
-
-addSlidable(countdownDiv);
 window.addEventListener("resize", () => setTimeout(scrollToBottom, 100));
