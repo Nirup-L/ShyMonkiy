@@ -1010,17 +1010,17 @@ floaterDiv.onclick = () => {
 }
 
 function addSlidable(component) {
-  component.addEventListener("touchstart", handleTouchStart, false);
-  component.addEventListener("touchmove", handleTouchMove, false);
+  component.addEventListener("touchstart", handlecdTouchStart, true);
+  component.addEventListener("touchmove", handlecdTouchMove, true);
 
   let xStart = null;
 
-  function handleTouchStart(evt) {
+  function handlecdTouchStart(evt) {
     const firstTouch = evt.touches[0];
     xStart = firstTouch.clientX;
   }
 
-  function handleTouchMove(evt) {
+  function handlecdTouchMove(evt) {
     if (!xStart) return;
     const xEnd = evt.touches[0].clientX;
     const diffX = xStart - xEnd;
