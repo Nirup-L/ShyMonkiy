@@ -946,6 +946,14 @@ function uploadFiles(files) {
   });
 }
 
+
+
+
+
+
+countdownDiv = document.getElementById("marriageCountdown");
+floaterDiv = document.getElementById("floater");
+
 function applyTimeValue(element,value)
 {
   for(i=0;i<element.length;i++)
@@ -965,18 +973,11 @@ function hideCountdown() {
 
 function showFloater() {
   floaterDiv.style.display = "flex";
-  addSlidable(countdownDiv);
 }
 
 function hideFloater() {
   floaterDiv.style.display = "none";
 }
-
-
-
-
-countdownDiv = document.getElementById("marriageCountdown");
-floaterDiv = document.getElementById("floater");
 // Set the target date and time (YYYY-MM-DD HH:MM:SS format)
 const targetDate = new Date("2025-12-24T16:00:00").getTime();
 // Update countdown every second
