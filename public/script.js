@@ -1011,29 +1011,26 @@ floaterDiv.onclick = () => {
 
 function addSlidable(component) {
   component.addEventListener("touchstart", handlecdTouchStart, true);
-  component.addEventListener("touchmove", handlecdTouchMove, true);
+  component.addEventListener("touchmove", (e) => handlecdTouchEnd(e, msg, id), true);
 
   let xStart = null;
 
   function handlecdTouchStart(evt) {
-    const firstTouch = evt.touches[0];
-    xStart = firstTouch.clientX;
+    xDown = evt.touches[0].clientX;
   }
 
-  function handlecdTouchMove(evt) {
-    if (!xStart) return;
-    const xEnd = evt.touches[0].clientX;
-    const diffX = xStart - xEnd;
+  function handlecdTouchEnd(evt, msg, id) {
+    if (!xDown) return;
 
-    if (Math.abs(diffX) > 50) {
-      if (diffX > 0)
-        current = Math.min(mediaItems.length - 1, current + 1); // Left swipe
-      else current = Math.max(0, current - 1); // Right swipe
-      hideCountdown();
+    let xUp = evt.changedTouches[0].clientX;
+    let xDiff = xUp - xDown;
+
+    if (xDiff > 120 || xDiff < -120) {
       showFloater();
       hideCountdown();
-      xStart = null;
     }
+
+    xDown = null;
   }
 }
 
