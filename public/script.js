@@ -954,6 +954,29 @@ function applyTimeValue(element,value)
   }
 }
 
+function showCountdown() {
+  countdownDiv.style.display = "block";
+  addSlidable(countdownDiv);
+}
+
+function hideCountdown() {
+  countdownDiv.style.display = "none";
+}
+
+function showFloater() {
+  floaterDiv.style.display = "flex";
+  addSlidable(countdownDiv);
+}
+
+function hideFloater() {
+  floaterDiv.style.display = "none";
+}
+
+floaterDiv.onclick = () => {
+  showCountdown();
+  hideFloater();
+}
+
 
 countdownDiv = document.getElementById("marriageCountdown");
 floaterDiv = document.getElementById("floater");
@@ -986,31 +1009,7 @@ const timer = setInterval(() => {
   }
 }, 1000);
 
-function showCountdown() {
-  countdownDiv.style.display = "block";
-  addSlidable(countdownDiv);
-}
-
-function hideCountdown() {
-  countdownDiv.style.display = "none";
-}
-
-function showFloater() {
-  floaterDiv.style.display = "flex";
-  addSlidable(countdownDiv);
-}
-
-function hideFloater() {
-  floaterDiv.style.display = "none";
-}
-
-floaterDiv.onclick = () => {
-  showCountdown();
-  hideFloater();
-}
-
-
-  let startX = 0; 
+let startX = 0; 
   countdownDiv.addEventListener("touchstart", (e) => { 
     startX = e.touches[0].clientX; 
     }); 
