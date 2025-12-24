@@ -1010,16 +1010,14 @@ floaterDiv.onclick = () => {
 }
 
 function addSlidable(component) {
-  component.addEventListener("touchstart", handlecdTouchStart, true);
-  component.addEventListener("touchmove", (e) => handlecdTouchEnd(e, msg, id), true);
-
-  let xStart = null;
+  component.addEventListener("touchstart", handlecdTouchStart, false);
+  component.addEventListener("touchmove", (e) => handlecdTouchEnd(e), false);
 
   function handlecdTouchStart(evt) {
     xDown = evt.touches[0].clientX;
   }
 
-  function handlecdTouchEnd(evt, msg, id) {
+  function handlecdTouchEnd(evt) {
     if (!xDown) return;
 
     let xUp = evt.changedTouches[0].clientX;
@@ -1034,4 +1032,5 @@ function addSlidable(component) {
   }
 }
 
+addSlidable(countdownDiv);
 window.addEventListener("resize", () => setTimeout(scrollToBottom, 100));
