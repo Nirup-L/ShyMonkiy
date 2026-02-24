@@ -570,7 +570,6 @@ function showReplyPreview(msg, id) {
 }
 
 function markAsSeen(messageId) {
-  return;
   const path = `messages/${messageId}/seenBy/${currentUser}`;
   db.ref(path)
     .once("value")
