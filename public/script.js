@@ -918,11 +918,21 @@ function createPreview(file) {
   previewDiv.className = "preview";
 
   if (file.type.startsWith("image")) {
-    previewDiv.appendChild("<p>uploading image</p>");
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.style.maxWidth = "100px";
+    previewDiv.appendChild(img);
 
   } else if (file.type.startsWith("video")) {
-    previewDiv.appendChild("<p>uuploading video</p>");
-  } else {
+
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(file);
+    video.controls = true;
+    video.style.maxWidth = "100px";
+    previewDiv.appendChild(video);
+
+  }  else {
     const fileLabel = document.createElement("p");
     fileLabel.textContent = file.name;
     previewDiv.appendChild(fileLabel);
