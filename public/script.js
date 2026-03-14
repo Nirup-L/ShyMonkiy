@@ -154,8 +154,15 @@ function sendMessage() {
   if (files.length > 0) {
     files.forEach((file) => {
       const msgId = db.ref().child("messages").push().key;
-      const ref = storage.ref("uploads/" + msgId + "_" + file.name);
-      const uploadTask = ref.put(file);
+      uploadToCloudinary(file).then((url) => {
+        db.ref("messages/" + msgId).set({
+          sender: currentUser,
+          fileURL: url,
+          fileName: file.name,
+          type: file.type,
+          timestamp: Date.now(),});
+
+});
 
       const progressWrapper = document.createElement("div");
       progressWrapper.className = "message you";
@@ -173,31 +180,7 @@ function sendMessage() {
       progressWrapper.appendChild(progressBar);
       document.getElementById("chatWindow").appendChild(progressWrapper);
       scrollToBottom();
-
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const percent = (
-            (snapshot.bytesTransferred / snapshot.totalBytes) *
-            100
-          ).toFixed(0);
-          progressInner.style.width = percent + "%";
-          progressInner.innerText = percent + "%";
-        },
-        console.error,
-        () => {
-          ref.getDownloadURL().then((url) => {
-            db.ref("messages/" + msgId).set({
-              sender: currentUser,
-              fileURL: url,
-              fileName: file.name,
-              type: file.type,
-              timestamp: Date.now(),
-            });
-            progressWrapper.remove(); // Remove local-only preview
-          });
-        },
-      );
+      
     });
   } else if (msgText.trim() === USERS[currentUser]) {
     goToGallery();
@@ -223,6 +206,24 @@ function sendMessage() {
   setTimeout(() => {
     document.getElementById("messageInput").focus();
   }, 100);
+}
+
+async function uploadToCloudinary(file) {
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "ShyMonkiy");
+
+  const res = await fetch(
+    "https://api.cloudinary.com/v1_1/dg2iifzlc/auto/upload",
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  const data = await res.json();
+  return data.secure_url;
 }
 
 function cancelReply() {
@@ -889,60 +890,80 @@ function previewBeforeUpload() {
   previewDiv.appendChild(buttonWrapper);
 }
 
-function uploadFiles(files) {
-  const preview = document.getElementById("galleryUploadPreview");
-  const previewDiv = document.getElementById("galleryUpload");
-  const progressContainer = document.getElementById("galleryUploadProgress");
-  const progressBar = progressContainer.querySelector(".progress-bar");
+function createPreview(file) {
 
-  progressContainer.style.display = "block";
-  progressBar.style.width = "0%";
-  progressBar.style.height = "10px";
-  let uploaded = 0;
+  const previewDiv = document.createElement("div");
+  previewDiv.className = "preview";
+
+  if (file.type.startsWith("image")) {
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+
+    previewDiv.appendChild(img);
+
+  } else if (file.type.startsWith("video")) {
+
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(file);
+    video.controls = true;
+
+    previewDiv.appendChild(video);
+
+  } else {
+
+    const fileLabel = document.createElement("p");
+    fileLabel.textContent = file.name;
+
+    previewDiv.appendChild(fileLabel);
+  }
+
+  document.querySelector("#chatBox").appendChild(previewDiv);
+
+  return previewDiv;
+}
+
+async function handleFileUpload(file) {
+
+  const preview = createPreview(file);
+
+  const url = await uploadToCloudinary(file);
+
+  // Replace preview source with actual URL
+  const media = preview.querySelector("img, video");
+
+  if (media) {
+    media.src = url;
+  }
+
+  // Save message
+  db.ref("messages").push({
+    sender: currentUser,
+    fileURL: url,
+    fileName: file.name,
+    type: file.type,
+    timestamp: Date.now()
+  });
+
+}
+
+function uploadFiles(files) {
 
   files.forEach((file) => {
     const msgId = db.ref().child("messages").push().key;
-    const ref = storage.ref("uploads/" + msgId + "_" + file.name);
-    const uploadTask = ref.put(file);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percent = (
-          (snapshot.bytesTransferred / snapshot.totalBytes) *
-          100
-        ).toFixed(0);
-        progressBar.style.width = percent + "%";
-      },
-      console.error,
-      () => {
-        ref.getDownloadURL().then((url) => {
-          db.ref("messages/" + msgId)
-            .set({
-              sender: currentUser,
-              fileURL: url,
-              fileName: file.name,
-              type: file.type,
-              timestamp: Date.now(),
-            })
-            .then(() => {
-              uploaded++;
-              if (uploaded === files.length) {
-                document.getElementById("galleryFileInput").value = "";
-                progressBar.style.width = "100%";
-                setTimeout(() => {
-                  progressContainer.style.display = "none";
-                  preview.style.display = "none";
-                  preview.innerHTML = "";
-                  previewDiv.style.display = "none";
-                  previewDiv.innerHTML = `<div id="galleryUploadPreview" style="padding: 10px; display: none;"></div>`;
-                  loadGallery();
-                }, 1000);
-              }
-            });
-        });
-      },
-    );
+    uploadToCloudinary(file).then((url) => {
+      const previewDiv = createPreview(file);
+      const media = previewDiv.querySelector("img,video");
+      if(media) media.src = url;
+      db.ref("messages/" + msgId)
+      .set({
+      sender: currentUser,
+      fileURL: url,
+      fileName: file.name,
+      type: file.type,
+      timestamp: Date.now(),
+    });
+});
   });
 }
 
