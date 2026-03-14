@@ -171,22 +171,6 @@ function sendMessage() {
           timestamp: Date.now(),
         });
       });
-
-      const progressWrapper = document.createElement("div");
-      progressWrapper.className = "message you";
-      progressWrapper.setAttribute("data-id", msgId);
-      const fileLabel = document.createElement("div");
-      fileLabel.innerText = `Uploading ${file.name}`;
-      const progressBar = document.createElement("div");
-      progressBar.className = "progress mt-1";
-      const progressInner = document.createElement("div");
-      progressInner.className = "progress-bar";
-      progressInner.style.width = "0%";
-      progressInner.innerText = "0%";
-      progressBar.appendChild(progressInner);
-      progressWrapper.appendChild(fileLabel);
-      progressWrapper.appendChild(progressBar);
-      document.getElementById("chatWindow").appendChild(progressWrapper);
       scrollToBottom();
 
     });
@@ -239,7 +223,7 @@ function uploadToCloudinary(file, progressCallback) {
         const percent = Math.round(
           (event.loaded / event.total) * 100
         );
-
+        console.log(percent);
         progressCallback(percent);
       }
     };
@@ -890,7 +874,6 @@ function previewBeforeUpload() {
       img.src = URL.createObjectURL(file);
       img.style.maxWidth = "100px";
       img.style.margin = "10px";
-
       preview.appendChild(img);
     } else if (file.type.startsWith("video/")) {
       const video = document.createElement("video");
@@ -898,7 +881,6 @@ function previewBeforeUpload() {
       video.controls = true;
       video.style.maxWidth = "100px";
       video.style.margin = "10px";
-
       preview.appendChild(video);
     }
   });
@@ -936,54 +918,18 @@ function createPreview(file) {
   previewDiv.className = "preview";
 
   if (file.type.startsWith("image")) {
-
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(file);
-
-    previewDiv.appendChild(img);
+    previewDiv.appendChild("<p>uploading image</p>");
 
   } else if (file.type.startsWith("video")) {
-
-    const video = document.createElement("video");
-    video.src = URL.createObjectURL(file);
-    video.controls = true;
-
-    previewDiv.appendChild(video);
-
+    previewDiv.appendChild("<p>uuploading video</p>");
   } else {
-
     const fileLabel = document.createElement("p");
     fileLabel.textContent = file.name;
-
     previewDiv.appendChild(fileLabel);
   }
 
   document.querySelector("#chatWindow").appendChild(previewDiv);
   return previewDiv;
-}
-
-async function handleFileUpload(file) {
-
-  const preview = createPreview(file);
-
-  const url = await uploadToCloudinary(file);
-
-  // Replace preview source with actual URL
-  const media = preview.querySelector("img, video");
-
-  if (media) {
-    media.src = url;
-  }
-
-  // Save message
-  db.ref("messages").push({
-    sender: currentUser,
-    fileURL: url,
-    fileName: file.name,
-    type: file.type,
-    timestamp: Date.now()
-  });
-
 }
 
 function uploadFiles(files) {
@@ -1010,6 +956,9 @@ function uploadFiles(files) {
       });
     });
   });
+  const previewDiv = document.getElementById("galleryUpload");
+  previewDiv.style.display = "none";
+  loadGallery();
 }
 
 
