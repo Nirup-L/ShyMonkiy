@@ -154,13 +154,13 @@ function sendMessage() {
   if (files.length > 0) {
     files.forEach((file) => {
       const msgId = db.ref().child("messages").push().key;
+      const previewDiv = createPreview(file);
       uploadToCloudinary(file, function (progress) {
       const progressBar = preview.querySelector(".progress-bar");
       if (progressBar) {
         progressBar.style.width = progress + "%";
       }
     }).then((url) => {
-       const previewDiv = createPreview(file);
         const media = previewDiv.querySelector("img,video");
         if (media) media.src = url;
         db.ref("messages/" + msgId).set({
@@ -170,7 +170,6 @@ function sendMessage() {
           type: file.type,
           timestamp: Date.now(),
         });
-
       });
 
       const progressWrapper = document.createElement("div");
@@ -959,8 +958,7 @@ function createPreview(file) {
     previewDiv.appendChild(fileLabel);
   }
 
-  document.querySelector("#chatBox").appendChild(previewDiv);
-
+  document.querySelector("#chatWindow").appendChild(previewDiv);
   return previewDiv;
 }
 
