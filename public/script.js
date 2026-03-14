@@ -154,15 +154,24 @@ function sendMessage() {
   if (files.length > 0) {
     files.forEach((file) => {
       const msgId = db.ref().child("messages").push().key;
-      uploadToCloudinary(file).then((url) => {
+      uploadToCloudinary(file, function (progress) {
+      const progressBar = preview.querySelector(".progress-bar");
+      if (progressBar) {
+        progressBar.style.width = progress + "%";
+      }
+    }).then((url) => {
+       const previewDiv = createPreview(file);
+        const media = previewDiv.querySelector("img,video");
+        if (media) media.src = url;
         db.ref("messages/" + msgId).set({
           sender: currentUser,
           fileURL: url,
           fileName: file.name,
           type: file.type,
-          timestamp: Date.now(),});
+          timestamp: Date.now(),
+        });
 
-});
+      });
 
       const progressWrapper = document.createElement("div");
       progressWrapper.className = "message you";
@@ -180,7 +189,7 @@ function sendMessage() {
       progressWrapper.appendChild(progressBar);
       document.getElementById("chatWindow").appendChild(progressWrapper);
       scrollToBottom();
-      
+
     });
   } else if (msgText.trim() === USERS[currentUser]) {
     goToGallery();
@@ -208,22 +217,54 @@ function sendMessage() {
   }, 100);
 }
 
-async function uploadToCloudinary(file) {
+function uploadToCloudinary(file, progressCallback) {
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "ShyMonkiy");
+  return new Promise((resolve, reject) => {
 
-  const res = await fetch(
-    "https://api.cloudinary.com/v1_1/dg2iifzlc/auto/upload",
-    {
-      method: "POST",
-      body: formData
-    }
-  );
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "ShyMonkiy");
 
-  const data = await res.json();
-  return data.secure_url;
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(
+      "POST",
+      "https://api.cloudinary.com/v1_1/dg2iifzlc/auto/upload"
+    );
+
+    // Progress tracking
+    xhr.upload.onprogress = function (event) {
+
+      if (event.lengthComputable) {
+
+        const percent = Math.round(
+          (event.loaded / event.total) * 100
+        );
+
+        progressCallback(percent);
+      }
+    };
+
+    xhr.onload = function () {
+
+      if (xhr.status === 200) {
+
+        const response = JSON.parse(xhr.responseText);
+        resolve(response.secure_url);
+
+      } else {
+
+        reject("Upload failed");
+      }
+    };
+
+    xhr.onerror = function () {
+      reject("Upload error");
+    };
+
+    xhr.send(formData);
+
+  });
 }
 
 function cancelReply() {
@@ -284,7 +325,7 @@ chatWindow.addEventListener("scroll", () => {
   }
 });
 
-function loadInitialMessages(callback = () => {}) {
+function loadInitialMessages(callback = () => { }) {
   const chatWindow = document.getElementById("chatWindow");
   chatWindow.innerHTML = "";
 
@@ -347,11 +388,11 @@ function loadInitialMessages(callback = () => {}) {
   // This log runs before any child_added events fire
   console.log("initial:", lastKnownDate);
 }
-function listenForMessages(callback = () => {}) {
+function listenForMessages(callback = () => { }) {
   loadInitialMessages(callback);
 }
 
-function loadPreviousMessages(earliestTimeStamp, callback = () => {}) {
+function loadPreviousMessages(earliestTimeStamp, callback = () => { }) {
   const ref = db
     .ref("messages")
     .orderByChild("timestamp")
@@ -951,19 +992,25 @@ function uploadFiles(files) {
 
   files.forEach((file) => {
     const msgId = db.ref().child("messages").push().key;
-    uploadToCloudinary(file).then((url) => {
-      const previewDiv = createPreview(file);
-      const media = previewDiv.querySelector("img,video");
-      if(media) media.src = url;
-      db.ref("messages/" + msgId)
-      .set({
-      sender: currentUser,
-      fileURL: url,
-      fileName: file.name,
-      type: file.type,
-      timestamp: Date.now(),
+    const preview = createPreview(file);
+    uploadToCloudinary(file, function (progress) {
+      const progressBar = preview.querySelector(".progress-bar");
+      if (progressBar) {
+        progressBar.style.width = progress + "%";
+      }
+    }).then((url) => {
+      const media = preview.querySelector("img,video");
+      if (media) {
+        media.src = url;
+      }
+      db.ref("messages/" + msgId).set({
+        sender: currentUser,
+        fileURL: url,
+        fileName: file.name,
+        type: file.type,
+        timestamp: Date.now()
+      });
     });
-});
   });
 }
 
@@ -975,10 +1022,8 @@ function uploadFiles(files) {
 countdownDiv = document.getElementById("marriageCountdown");
 floaterDiv = document.getElementById("floater");
 
-function applyTimeValue(element,value)
-{
-  for(i=0;i<element.length;i++)
-  {
+function applyTimeValue(element, value) {
+  for (i = 0; i < element.length; i++) {
     element[i].innerHTML = value;
   }
 }
@@ -1016,9 +1061,9 @@ const timer = setInterval(() => {
   timeMinute = document.getElementsByClassName("minutes");
   timeSecond = document.getElementsByClassName("seconds");
   // Display result
-    applyTimeValue(timeHour,String(hours).padStart(2, "0") + '<p class="timerText">hours</p>');
-    applyTimeValue(timeMinute,String(minutes).padStart(2, "0") + '<p class="timerText">minutes</p>');
-    applyTimeValue(timeSecond,String(seconds).padStart(2, "0") + '<p class="timerText">seconds</p>');
+  applyTimeValue(timeHour, String(hours).padStart(2, "0") + '<p class="timerText">hours</p>');
+  applyTimeValue(timeMinute, String(minutes).padStart(2, "0") + '<p class="timerText">minutes</p>');
+  applyTimeValue(timeSecond, String(seconds).padStart(2, "0") + '<p class="timerText">seconds</p>');
 
   // If countdown finished
   if (distance < 0) {
@@ -1033,19 +1078,20 @@ floaterDiv.onclick = () => {
   hideFloater();
 }
 
-let startX = 0; 
-  countdownDiv.addEventListener("touchstart", (e) => { 
-    startX = e.touches[0].clientX; 
-    }); 
-  countdownDiv.addEventListener("touchend", (e) => { 
-    const endX = e.changedTouches[0].clientX; 
-    const diffX = endX - startX; 
-    if (diffX > 50) { 
-      countdownDiv.classList.add("slid");
-      // threshold to detect swipe // 👉 Action when swiped right 
-      setTimeout(() => { countdownDiv.classList.remove("slid"); }, 1000);
-      hideCountdown();
-      showFloater();
-      } });
+let startX = 0;
+countdownDiv.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].clientX;
+});
+countdownDiv.addEventListener("touchend", (e) => {
+  const endX = e.changedTouches[0].clientX;
+  const diffX = endX - startX;
+  if (diffX > 50) {
+    countdownDiv.classList.add("slid");
+    // threshold to detect swipe // 👉 Action when swiped right 
+    setTimeout(() => { countdownDiv.classList.remove("slid"); }, 1000);
+    hideCountdown();
+    showFloater();
+  }
+});
 
 window.addEventListener("resize", () => setTimeout(scrollToBottom, 100));
