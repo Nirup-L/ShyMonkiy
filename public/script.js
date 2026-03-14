@@ -154,23 +154,17 @@ function sendMessage() {
   if (files.length > 0) {
     files.forEach((file) => {
       const msgId = db.ref().child("messages").push().key;
-      const previewDiv = createPreview(file);
-      uploadToCloudinary(file, function (progress) {
-      const progressBar = preview.querySelector(".progress-bar");
-      if (progressBar) {
-        progressBar.style.width = progress + "%";
-      }
-    }).then((url) => {
-        const media = previewDiv.querySelector("img,video");
-        if (media) media.src = url;
-        db.ref("messages/" + msgId).set({
-          sender: currentUser,
-          fileURL: url,
-          fileName: file.name,
-          type: file.type,
-          timestamp: Date.now(),
-        });
-      });
+      uploadToCloudinary(file).then((url) => {
+
+  db.ref("messages/" + msgId).set({
+    sender: currentUser,
+    fileURL: url,
+    fileName: file.name,
+    type: file.type,
+    timestamp: Date.now(),
+  });
+
+});
       scrollToBottom();
 
     });
@@ -200,54 +194,21 @@ function sendMessage() {
   }, 100);
 }
 
-function uploadToCloudinary(file, progressCallback) {
+async function uploadToCloudinary(file) {
 
-  return new Promise((resolve, reject) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "ShyMonkiy");
+  const res = await fetch(
+   "https://api.cloudinary.com/v1_1/dg2iifzlc/auto/upload",
+    {
+      method: "POST",
+      body: formData
+    }
+  );
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "ShyMonkiy");
-
-    const xhr = new XMLHttpRequest();
-
-    xhr.open(
-      "POST",
-      "https://api.cloudinary.com/v1_1/dg2iifzlc/auto/upload"
-    );
-
-    // Progress tracking
-    xhr.upload.onprogress = function (event) {
-
-      if (event.lengthComputable) {
-
-        const percent = Math.round(
-          (event.loaded / event.total) * 100
-        );
-        console.log(percent);
-        progressCallback(percent);
-      }
-    };
-
-    xhr.onload = function () {
-
-      if (xhr.status === 200) {
-
-        const response = JSON.parse(xhr.responseText);
-        resolve(response.secure_url);
-
-      } else {
-
-        reject("Upload failed");
-      }
-    };
-
-    xhr.onerror = function () {
-      reject("Upload error");
-    };
-
-    xhr.send(formData);
-
-  });
+  const data = await res.json();
+  return data.secure_url;
 }
 
 function cancelReply() {
@@ -946,25 +907,16 @@ function uploadFiles(files) {
 
   files.forEach((file) => {
     const msgId = db.ref().child("messages").push().key;
-    const preview = createPreview(file);
-    uploadToCloudinary(file, function (progress) {
-      const progressBar = preview.querySelector(".progress-bar");
-      if (progressBar) {
-        progressBar.style.width = progress + "%";
-      }
-    }).then((url) => {
-      const media = preview.querySelector("img,video");
-      if (media) {
-        media.src = url;
-      }
-      db.ref("messages/" + msgId).set({
-        sender: currentUser,
-        fileURL: url,
-        fileName: file.name,
-        type: file.type,
-        timestamp: Date.now()
-      });
-    });
+    uploadToCloudinary(file).then((url) => {
+
+  db.ref("messages/" + msgId).set({
+    sender: currentUser,
+    fileURL: url,
+    fileName: file.name,
+    type: file.type,
+    timestamp: Date.now(),
+  });
+});
   });
   const previewDiv = document.getElementById("galleryUpload");
   previewDiv.style.display = "none";
