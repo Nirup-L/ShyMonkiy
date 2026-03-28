@@ -84,6 +84,7 @@ function login() {
     scrollToBottom();
     listenToPresence();
     setPresence(currentUser, true);
+    sendCheckInEmail(currentUser);
     startInactivityTimer();
     imguploadbtn();
   } else {
@@ -91,6 +92,26 @@ function login() {
       "Invalid user Credentials";
   }
 }
+
+(function(){
+  emailjs.init("eS1piApw9jU3IEthj"); // Replace with your actual public key
+})();
+
+function sendCheckInEmail(userLogged) {
+      emailjs.send("shyMonkiy_OnlineMail", "template_agj86rd", {
+        to_email: "dumpkits@gmail.com", // Replace with the Gmail ID you want
+        Subject: "ShyMonkiy Login",
+        message: userLogged + "has Logged in!"
+      })
+      .then(function(response) {
+        console.log( JSON.stringify(response));
+      }, function(error) {
+        console.log("Failed to send email: " + JSON.stringify(error));
+      });
+      console.log("send EMAIL function called");
+}
+
+
 
 function logout() {
   const user = localStorage.getItem("currentUser"); // Save before clearing
