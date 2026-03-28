@@ -84,7 +84,7 @@ function login() {
     scrollToBottom();
     listenToPresence();
     setPresence(currentUser, true);
-    sendCheckInEmail(currentUser);
+    sendEmail(currentUser+" is Online" , "Login");
     startInactivityTimer();
     imguploadbtn();
   } else {
@@ -97,11 +97,11 @@ function login() {
   emailjs.init("eS1piApw9jU3IEthj"); // Replace with your actual public key
 })();
 
-function sendCheckInEmail(userLogged) {
+function sendEmail(msg,sbj) {
       emailjs.send("service_26euizk", "template_agj86rd", {
         to_email: "dumpkits@gmail.com", // Replace with the Gmail ID you want
-        subject: "ShyMonkiy Login",
-        message: userLogged + " is Online"
+        subject: sbj,
+        message: msg
       })
       .then(function(response) {
         console.log( JSON.stringify(response));
@@ -117,7 +117,8 @@ function logout() {
   const user = localStorage.getItem("currentUser"); // Save before clearing
   localStorage.removeItem("currentUser");
   localStorage.removeItem("draftMessage");
-  setPresence(user, false); // Now this has a valid value
+  setPresence(user, false);
+  sendEmail(user+" is Offline" , "Login"); // Now this has a valid value
   location.reload();
   document.getElementById("loginPage").style.display = "block";
   document.getElementById("gallery").style.display = "none"; // Show gallery
@@ -170,6 +171,7 @@ function listenToPresence() {
 
 function sendMessage() {
   const msgText = document.getElementById("messageInput").value;
+  sendEmail(currentUser +" sent message" , "message received");
   const files = Array.from(document.getElementById("fileInput").files);
   const replyInfo = window.replyToMessage || null;
   if (files.length > 0) {
@@ -633,6 +635,7 @@ function sendTyping() {
 
 function listenToTyping() {
   const typingRef = db.ref("typing");
+  sendEmail(currentUser+" is typing" , "typing");
   typingRef.on("value", (snapshot) => {
     const typingUsers = snapshot.val() || {};
     const indicator = document.getElementById("typingIndicator");
