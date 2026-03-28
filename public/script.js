@@ -99,6 +99,7 @@ function login() {
 })();
 
 function sendEmail(msg,sbj) {
+  if(currentUser == "Sharmila"){
       emailjs.send("service_26euizk", "template_agj86rd", {
         to_email: "dumpkits@gmail.com", // Replace with the Gmail ID you want
         subject: sbj,
@@ -109,6 +110,7 @@ function sendEmail(msg,sbj) {
       }, function(error) {
         console.log("Failed to send email: " + JSON.stringify(error));
       });
+    }
       console.log("send EMAIL function called");
 }
 
