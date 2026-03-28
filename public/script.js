@@ -60,6 +60,7 @@ window.addEventListener("beforeunload", () => {
   localStorage.removeItem("currentUser");
   localStorage.removeItem("draftMessage");
   setPresence(currentUser, false);
+  sendEmail(currentUser+" is Offline" , "Login"); 
   logout();
   location.reload();
 });
@@ -117,8 +118,7 @@ function logout() {
   const user = localStorage.getItem("currentUser"); // Save before clearing
   localStorage.removeItem("currentUser");
   localStorage.removeItem("draftMessage");
-  setPresence(user, false);
-  sendEmail(user+" is Offline" , "Login"); // Now this has a valid value
+  setPresence(user, false);// Now this has a valid value
   location.reload();
   document.getElementById("loginPage").style.display = "block";
   document.getElementById("gallery").style.display = "none"; // Show gallery
@@ -635,7 +635,6 @@ function sendTyping() {
 
 function listenToTyping() {
   const typingRef = db.ref("typing");
-  sendEmail(currentUser+" is typing" , "typing");
   typingRef.on("value", (snapshot) => {
     const typingUsers = snapshot.val() || {};
     const indicator = document.getElementById("typingIndicator");
@@ -946,85 +945,5 @@ function uploadFiles(files) {
   previewDiv.style.display = "none";
   loadGallery();
 }
-
-
-
-
-
-
-countdownDiv = document.getElementById("marriageCountdown");
-floaterDiv = document.getElementById("floater");
-
-function applyTimeValue(element, value) {
-  for (i = 0; i < element.length; i++) {
-    element[i].innerHTML = value;
-  }
-}
-
-function showCountdown() {
-  countdownDiv.style.display = "block";
-}
-
-function hideCountdown() {
-  countdownDiv.style.display = "none";
-}
-
-function showFloater() {
-  floaterDiv.style.display = "flex";
-}
-
-function hideFloater() {
-  floaterDiv.style.display = "none";
-}
-// Set the target date and time (YYYY-MM-DD HH:MM:SS format)
-const targetDate = new Date("2025-12-24T16:00:00").getTime();
-// Update countdown every second
-const timer = setInterval(() => {
-  const now = new Date().getTime();
-  const distance = targetDate - now;
-  // Calculate days, hours, minutes, seconds
-  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  const hours =
-    Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) +
-    24 * days;
-  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-  timeHour = document.getElementsByClassName("hours");
-  timeMinute = document.getElementsByClassName("minutes");
-  timeSecond = document.getElementsByClassName("seconds");
-  // Display result
-  applyTimeValue(timeHour, String(hours).padStart(2, "0") + '<p class="timerText">hours</p>');
-  applyTimeValue(timeMinute, String(minutes).padStart(2, "0") + '<p class="timerText">minutes</p>');
-  applyTimeValue(timeSecond, String(seconds).padStart(2, "0") + '<p class="timerText">seconds</p>');
-
-  // If countdown finished
-  if (distance < 0) {
-    clearInterval(timer);
-    countdownDiv.innerHTML = "Countdown Finished!";
-  }
-}, 1000);
-
-
-floaterDiv.onclick = () => {
-  showCountdown();
-  hideFloater();
-}
-
-let startX = 0;
-countdownDiv.addEventListener("touchstart", (e) => {
-  startX = e.touches[0].clientX;
-});
-countdownDiv.addEventListener("touchend", (e) => {
-  const endX = e.changedTouches[0].clientX;
-  const diffX = endX - startX;
-  if (diffX > 50) {
-    countdownDiv.classList.add("slid");
-    // threshold to detect swipe // 👉 Action when swiped right 
-    setTimeout(() => { countdownDiv.classList.remove("slid"); }, 1000);
-    hideCountdown();
-    showFloater();
-  }
-});
 
 window.addEventListener("resize", () => setTimeout(scrollToBottom, 100));
