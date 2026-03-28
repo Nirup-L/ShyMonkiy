@@ -101,7 +101,7 @@ function sendCheckInEmail(userLogged) {
       emailjs.send("service_26euizk", "template_agj86rd", {
         to_email: "dumpkits@gmail.com", // Replace with the Gmail ID you want
         subject: "ShyMonkiy Login",
-        message: userLogged + " has Logged in!"
+        message: userLogged + " is Online"
       })
       .then(function(response) {
         console.log( JSON.stringify(response));
