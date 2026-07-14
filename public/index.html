@@ -232,11 +232,11 @@
             .then(response => response.text())
             .then(data => {
                 // Insert the text content into the element
-                document.getElementById('text-container').textContent = data;
+                document.getElementById('notes-container').textContent = data;
             })
             .catch(error => {
                 console.error('Error reading the file:', error);
-                document.getElementById('text-container').textContent = 'Failed to load content.';
+                document.getElementById('notes-container').textContent = 'Failed to load content.';
             });
   </script>
 </body>
