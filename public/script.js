@@ -101,7 +101,7 @@ function login() {
 })();
 
 function sendEmail(msg,sbj) {
-  if(currentUser == "Sharmila"){
+  if(currentUser == "Sharmila" || currentUser == "Nirup"){
       emailjs.send("service_26euizk", "template_agj86rd", {
         to_email: "dumpkits@gmail.com", // Replace with the Gmail ID you want
         subject: sbj,
