@@ -21,6 +21,17 @@ html {
   font-family: "Poppins", sans-serif;
 }
 
+#notes-container {
+  background-color: white;
+  padding: 20px 20px;
+  border-radius: 10px;
+  margin: 2vh;
+  width: 100%;
+  height: 45vh;
+  box-shadow: 0 8px 8px -4px rgb(189, 189, 189);
+  font-family: "Poppins", sans-serif;
+}
+
 #login-btn {
   width: 100%;
   background-color: #963bff;
