@@ -77,7 +77,7 @@ function login() {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none"; // Show gallery
     //document.getElementById("notesPage").style.display = "flex";
-    document.getElementById("chatApp").style.display = "flex; // Hide chat
+    document.getElementById("chatApp").style.display = "flex"; // Hide chat
     document.getElementById("messageInput").value = "";
     localStorage.removeItem("draftMessage");
     const topLoader = document.getElementById("topLoader");
