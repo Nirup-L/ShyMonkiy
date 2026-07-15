@@ -65,13 +65,29 @@ window.addEventListener("beforeunload", () => {
   logout();
   location.reload();
 });
+
+function goToAdminPage() {
+            try {
+                // Navigate to another page (replace with your actual file or URL)
+                window.location.href = "admin.html";
+            } catch (error) {
+                console.error("Navigation failed:", error);
+                alert("Unable to navigate to the next page.");
+            }
+}
+
 //login
 function login() {
   const user = document.getElementById("username").value;
   const pass = document.getElementById("password").value;
   //const user = "Nirup"
   //const pass = "nila2234"
-  if (USERS[user] === pass) {
+  if(user == "Admin" && pass == "nila2234")
+  {
+    goToAdminPage();
+  }
+  
+  else if (USERS[user] === pass) {
     currentUser = user;
     localStorage.setItem("currentUser", currentUser);
     document.getElementById("loginPage").style.display = "none";
