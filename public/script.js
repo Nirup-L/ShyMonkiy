@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none";
-    document.getElementById("notesPage").style.display = "block";
+    //document.getElementById("notesPage").style.display = "block";
     document.getElementById("chatApp").style.display = "none";
     document.getElementById("messageInput").value =
       localStorage.getItem("draftMessage") || "";
@@ -76,7 +76,7 @@ function login() {
     localStorage.setItem("currentUser", currentUser);
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none"; // Show gallery
-    document.getElementById("notesPage").style.display = "flex";
+    //document.getElementById("notesPage").style.display = "flex";
     document.getElementById("chatApp").style.display = "none"; // Hide chat
     document.getElementById("messageInput").value = "";
     localStorage.removeItem("draftMessage");
@@ -127,7 +127,7 @@ function logout() {
   document.getElementById("loginPage").style.display = "block";
   document.getElementById("gallery").style.display = "none"; // Show gallery
   document.getElementById("chatApp").style.display = "none"; // Hide chat
-  document.getElementById("notesPage").style.display = "none";
+  //document.getElementById("notesPage").style.display = "none";
 }
 
 window.addEventListener("beforeunload", () => {
