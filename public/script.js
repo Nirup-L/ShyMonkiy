@@ -196,7 +196,7 @@ function listenToPresence() {
 
 function sendMessage() {
   const msgText = document.getElementById("messageInput").value;
-  sendEmail(currentUser +" sent message" , "message received");
+  //sendEmail(currentUser +" sent message" , "message received");
   const files = Array.from(document.getElementById("fileInput").files);
   const replyInfo = window.replyToMessage || null;
   if (files.length > 0) {
