@@ -3,7 +3,6 @@ const USERS = {
   Sharmila: "nila2234",
 };
 
-isUserOnline = false;
 let currentUser = localStorage.getItem("currentUser") || "";
 let inactivityTimer;
 let lastMessageDate = "";
@@ -12,9 +11,6 @@ const chatWindow = document.getElementById("chatWindow");
 
 window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
-    if(currentUser=="Sharmila"){
-    isUserOnline = true;
-    }
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none";
     //document.getElementById("notesPage").style.display = "block";
@@ -95,10 +91,6 @@ function login() {
   
   else if (USERS[user] === pass) {
     currentUser = user;
-    if(user=="Sharmila")
-    {
-      isUserOnline = true;
-    }
     localStorage.setItem("currentUser", currentUser);
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none"; // Show gallery
@@ -156,10 +148,6 @@ function logout() {
   document.getElementById("gallery").style.display = "none"; // Show gallery
   document.getElementById("chatApp").style.display = "none"; // Hide chat
   document.getElementById("notesPage").style.display = "none";
-  if(user=="Sharmila")
-    {
-      isUserOnline = false;
-    }
 }
 
 window.addEventListener("beforeunload", () => {
@@ -198,28 +186,17 @@ function listenToPresence() {
     if (isOnline) {
       status.innerText = `${otherUser} is Online`;
       status.style.color = "lightgreen";
-      if(currentUser=="Sharmila")
-      {
-        isUserOnline = false;
-      }
     } else {
       const formatted = formatLastSeen(lastSeen);
       status.innerText = `last seen at ${formatted}`;
       status.style.color = "gray";
-      if(currentUser=="Sharmila")
-      {
-        isUserOnline = true;
-      }
     }
   });
 }
 
 function sendMessage() {
   const msgText = document.getElementById("messageInput").value;
-  if(isUserOnline){
   sendEmail(currentUser +" sent message" , "message received");
-  isUserOnline = false;
-  }
   const files = Array.from(document.getElementById("fileInput").files);
   const replyInfo = window.replyToMessage || null;
   if (files.length > 0) {
