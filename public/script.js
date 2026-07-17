@@ -117,12 +117,12 @@ function login() {
 }
 
 (function(){
-  emailjs.init("eS1piApw9jU3IEthj"); // Replace with your actual public key
+  emailjs.init("yiDWBlC_fy1SEizFn"); // Replace with your actual public key
 })();
 
 function sendEmail(msg,sbj) {
   if(currentUser == "Sharmila"){
-      emailjs.send("service_26euizk", "template_agj86rd", {
+      emailjs.send("service_hw4kjv1", "template_17h5g1j", {
         to_email: "dumpkits@gmail.com", // Replace with the Gmail ID you want
         subject: sbj,
         message: msg
