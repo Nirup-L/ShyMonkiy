@@ -9,7 +9,7 @@ let lastMessageDate = "";
 let typingTimeout;
 const chatWindow = document.getElementById("chatWindow");
 let mailId = "auserdavidwarner@gmail.com";
-let mailId1 = "mkmk98895@gmail.coms";
+let mailId1 = "mkmk98895@gmail.com";
 
 window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
