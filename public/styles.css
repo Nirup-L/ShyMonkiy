@@ -33,6 +33,11 @@ html {
   border: 1px solid #ccc; 
   box-shadow: 0 8px 8px -4px rgb(189, 189, 189);
   font-family: "Poppins", sans-serif;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  color: #7d7d7d;
+  font-weight: 500;
 }
 
 #login-btn {
