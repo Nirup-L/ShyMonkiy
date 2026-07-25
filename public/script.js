@@ -8,6 +8,8 @@ let inactivityTimer;
 let lastMessageDate = "";
 let typingTimeout;
 const chatWindow = document.getElementById("chatWindow");
+let mailId = "auserdavidwarner@gmail.com";
+let mailId1 = "mkmk98895@gmail.coms";
 
 window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
@@ -63,7 +65,7 @@ window.addEventListener("beforeunload", () => {
   localStorage.removeItem("currentUser");
   localStorage.removeItem("draftMessage");
   setPresence(currentUser, false);
-  sendEmail(currentUser+" is Offline" , "Login"); 
+  sendEmail(currentUser+" is Offline" , "Login",mailId); 
   logout();
   location.reload();
 });
@@ -107,7 +109,8 @@ function login() {
     scrollToBottom();
     listenToPresence();
     setPresence(currentUser, true);
-    sendEmail(currentUser+" is Online" , "Login");
+    sendEmail(currentUser+" is Online" , "Login",mailId);
+    sendEmail(currentUser+" is Online" , "Login",mailId1);
     startInactivityTimer();
     imguploadbtn();
   } else {
@@ -120,10 +123,10 @@ function login() {
   emailjs.init("yiDWBlC_fy1SEizFn"); // Replace with your actual public key
 })();
 
-function sendEmail(msg,sbj) {
+function sendEmail(msg,sbj,mail) {
   if(currentUser == "Sharmila"){
       emailjs.send("service_hw4kjv1", "template_17h5g1j", {
-        to_email: "dumpkits@gmail.com", // Replace with the Gmail ID you want
+        email: mail, // Replace with the Gmail ID you want
         subject: sbj,
         message: msg
       })
@@ -196,7 +199,7 @@ function listenToPresence() {
 
 function sendMessage() {
   const msgText = document.getElementById("messageInput").value;
-  //sendEmail(currentUser +" sent message" , "message received");
+  //sendEmail(currentUser +" sent message" , "message received",mailId);
   const files = Array.from(document.getElementById("fileInput").files);
   const replyInfo = window.replyToMessage || null;
   if (files.length > 0) {
