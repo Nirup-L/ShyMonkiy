@@ -30,22 +30,25 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function disableChatPage()
+{
+  document.getElementById("notesPage").style.display = "flex";
+  document.getElementById("chatApp").style.display = "none";
+}
+
+function enableChatPage()
+{
+    document.getElementById("chatApp").style.display = "flex";
+    document.getElementById("notesPage").style.display = "none";
+}
 
 function toggleChatPage()
 {
-  
+   let time = 4.2;
     setTimeout(function() {
-      document.getElementById("notesPage").style.display = "flex";
-      document.getElementById("chatApp").style.display = "none";
-      //document.getElementById("chatApp").style.display = "flex";
-      //document.getElementById("notesPage").style.display = "none";
-    }, 2500);
-
-
-    //document.getElementById("notesPage").style.display = "flex";
-    //document.getElementById("chatApp").style.display = "none";
-    document.getElementById("chatApp").style.display = "flex";
-    document.getElementById("notesPage").style.display = "none";
+      disableChatPage();
+    }, time*1000);
+    enableChatPage();
 }
 
 
