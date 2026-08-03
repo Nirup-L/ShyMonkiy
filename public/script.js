@@ -15,7 +15,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none";
-    toggleChatPage();
+    isChatPageEnable(false);
     document.getElementById("messageInput").value =
       localStorage.getItem("draftMessage") || "";
     adjustTextarea(document.getElementById("messageInput"));
@@ -42,13 +42,19 @@ function enableChatPage()
     document.getElementById("notesPage").style.display = "none";
 }
 
-function toggleChatPage()
+function isChatPageEnable(flag)
 {
+  if(flag==false){
    let time = 4.2;
     setTimeout(function() {
       disableChatPage();
     }, time*1000);
     enableChatPage();
+  }
+  else
+  {
+    enableChatPage();
+  }
 }
 
 
@@ -116,7 +122,7 @@ function login() {
     localStorage.setItem("currentUser", currentUser);
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none"; // Show gallery
-    toggleChatPage();
+    isChatPageEnable(false);
     document.getElementById("messageInput").value = "";
     localStorage.removeItem("draftMessage");
     const topLoader = document.getElementById("topLoader");
