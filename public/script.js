@@ -15,10 +15,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (currentUser) {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none";
-    document.getElementById("notesPage").style.display = "block";
-    document.getElementById("chatApp").style.display = "none";
-    //document.getElementById("chatApp").style.display = "block";
-    //document.getElementById("notesPage").style.display = "none";
+    toggleChatPage();
     document.getElementById("messageInput").value =
       localStorage.getItem("draftMessage") || "";
     adjustTextarea(document.getElementById("messageInput"));
@@ -32,6 +29,26 @@ window.addEventListener("DOMContentLoaded", () => {
     imguploadbtn();
   }
 });
+
+
+function toggleChatPage()
+{
+  
+    /*setTimeout(function() {
+      document.getElementById("notesPage").style.display = "flex";
+      document.getElementById("chatApp").style.display = "none";
+      //document.getElementById("chatApp").style.display = "flex";
+      //document.getElementById("notesPage").style.display = "none";
+    }, 2500);*/
+
+
+    //document.getElementById("notesPage").style.display = "flex";
+    //document.getElementById("chatApp").style.display = "none";
+    document.getElementById("chatApp").style.display = "flex";
+    document.getElementById("notesPage").style.display = "none";
+}
+
+
 function goToGallery() {
   document.getElementById("chatApp").style.display = "none";
   document.getElementById("gallery").style.display = "block";
@@ -96,10 +113,7 @@ function login() {
     localStorage.setItem("currentUser", currentUser);
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("gallery").style.display = "none"; // Show gallery
-    //document.getElementById("notesPage").style.display = "none";
-    //document.getElementById("chatApp").style.display = "flex";
-    document.getElementById("chatApp").style.display = "none"; // Hide chat
-    document.getElementById("notesPage").style.display = "flex"
+    toggleChatPage();
     document.getElementById("messageInput").value = "";
     localStorage.removeItem("draftMessage");
     const topLoader = document.getElementById("topLoader");
