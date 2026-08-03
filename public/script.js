@@ -34,12 +34,12 @@ window.addEventListener("DOMContentLoaded", () => {
 function toggleChatPage()
 {
   
-    /*setTimeout(function() {
+    setTimeout(function() {
       document.getElementById("notesPage").style.display = "flex";
       document.getElementById("chatApp").style.display = "none";
       //document.getElementById("chatApp").style.display = "flex";
       //document.getElementById("notesPage").style.display = "none";
-    }, 2500);*/
+    }, 2500);
 
 
     //document.getElementById("notesPage").style.display = "flex";
