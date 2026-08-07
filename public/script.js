@@ -45,7 +45,7 @@ function enableChatPage()
 function isChatPageEnable(flag)
 {
   if(flag==false){
-   let time = 60*5;
+   let time = 0;
     setTimeout(function() {
       disableChatPage();
     }, time*1000);
