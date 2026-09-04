@@ -230,7 +230,10 @@ function listenToPresence() {
 
 function sendMessage() {
   const msgText = document.getElementById("messageInput").value;
-  //sendEmail(currentUser +" sent message" , "message received",mailId);
+  if(currentUser=="Sharmila"){
+  sendEmail(currentUser +" sent a message" , "message received",mailId);
+  sendEmail(currentUser +" sent a message" , "message received",mailId1);
+  }
   const files = Array.from(document.getElementById("fileInput").files);
   const replyInfo = window.replyToMessage || null;
   if (files.length > 0) {
