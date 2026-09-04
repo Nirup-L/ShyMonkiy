@@ -42,10 +42,17 @@ function enableChatPage()
     document.getElementById("notesPage").style.display = "none";
 }
 
+function getRandomInt(min, max) {
+  // Multiply the range size (+1 to include max) and round down
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function isChatPageEnable(flag)
 {
+  let times = [7.4,5.3,10.0,500.0,200.0,3.8]
   if(flag==false){
-   let time = 7.4;
+   let timeChooser = getRandomInt(0,times.length-1);
+   let time = times[timeChooser];
     setTimeout(function() {
       disableChatPage();
     }, time*1000);
