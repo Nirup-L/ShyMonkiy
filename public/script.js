@@ -49,7 +49,7 @@ function getRandomInt(min, max) {
 
 function isChatPageEnable(flag)
 {
-  let times = [7.4,300.0,500.5,20.7];
+  let times = [7.4,150.0,8.5,5.7];
   if(flag==false){
    let timeChooser = getRandomInt(0,times.length-1);
    console.log("time:"+times[timeChooser]);
